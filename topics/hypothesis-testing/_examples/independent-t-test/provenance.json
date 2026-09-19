@@ -1,0 +1,19 @@
+{
+  "input_file": "topics/hypothesis-testing/data/independent-t-test.csv",
+  "input_md5": "c8273388b3cb789fcbb53288a13ac818",
+  "r_version": "4.6.0",
+  "python_version": "3.14.6",
+  "numpy_version": "2.5.3",
+  "scipy_version": "1.18.1",
+  "excel": {
+    "application": "Microsoft Excel for Mac",
+    "version": "16.113",
+    "verified_utc": "2026-09-18T16:01:00.774284+00:00",
+    "source_md5": "c8273388b3cb789fcbb53288a13ac818",
+    "verification_workbook_md5": "f168cffcdae584057cfd89ced54d22c0",
+    "output_md5": "4fc5ba3e117e52fe67dc2dbddbe747c1",
+    "toolpak_output_md5": "7d43271f6eb33a64ff27f30be3ab7b22",
+    "method": "Native Excel T.TEST(two-tailed, type=3), worksheet formulas, and Analysis ToolPak Two-Sample Assuming Unequal Variances",
+    "download_workbook": "Recalculated, input-change tested, saved and reopened in Excel without a repair prompt."
+  }
+}

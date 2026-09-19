@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Compare two independent population means with Welch’s t-test, a critical value, and reproducible software checks.">
+
+<title>Independent two-sample t-test – SPH5002 Companion</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../topics/hypothesis-testing/index.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-6127151b6622d5f76dd1777582a6d302.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-f5a0c35908d06dae23463d51df8cac15.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../topics/hypothesis-testing/index.html">Topics</a></li><li class="breadcrumb-item"><a href="../../topics/hypothesis-testing/index.html">Hypothesis testing</a></li><li class="breadcrumb-item"><a href="../../topics/hypothesis-testing/independent-two-sample-t-test.html">Independent two-sample t-test</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">SPH5002 Companion</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../topics/hypothesis-testing/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hypothesis testing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../topics/hypothesis-testing/independent-two-sample-t-test.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Independent two-sample t-test</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1. Overview</a>
+  <ul class="collapse">
+  <li><a href="#suitability-checks" id="toc-suitability-checks" class="nav-link" data-scroll-target="#suitability-checks">Suitability checks</a></li>
+  </ul></li>
+  <li><a href="#application-required" id="toc-application-required" class="nav-link" data-scroll-target="#application-required">2. Application (required)</a>
+  <ul class="collapse">
+  <li><a href="#hand-calculation-ten-steps" id="toc-hand-calculation-ten-steps" class="nav-link" data-scroll-target="#hand-calculation-ten-steps">Hand calculation: ten steps</a></li>
+  <li><a href="#spreadsheet-practice" id="toc-spreadsheet-practice" class="nav-link" data-scroll-target="#spreadsheet-practice">Spreadsheet practice</a></li>
+  <li><a href="#self-checks" id="toc-self-checks" class="nav-link" data-scroll-target="#self-checks">Self-checks</a></li>
+  <li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes">Common mistakes</a></li>
+  </ul></li>
+  <li><a href="#theory-optional" id="toc-theory-optional" class="nav-link" data-scroll-target="#theory-optional">3. Theory (optional)</a>
+  <ul class="collapse">
+  <li><a href="#assumptions-and-diagnostic-questions" id="toc-assumptions-and-diagnostic-questions" class="nav-link" data-scroll-target="#assumptions-and-diagnostic-questions">Assumptions and diagnostic questions</a></li>
+  <li><a href="#why-welchs-standard-error-has-this-form" id="toc-why-welchs-standard-error-has-this-form" class="nav-link" data-scroll-target="#why-welchs-standard-error-has-this-form">Why Welch’s standard error has this form</a></li>
+  <li><a href="#why-the-pooled-test-is-exact-under-stronger-assumptions" id="toc-why-the-pooled-test-is-exact-under-stronger-assumptions" class="nav-link" data-scroll-target="#why-the-pooled-test-is-exact-under-stronger-assumptions">Why the pooled test is exact under stronger assumptions</a></li>
+  <li><a href="#confidence-interval" id="toc-confidence-interval" class="nav-link" data-scroll-target="#confidence-interval">Confidence interval</a></li>
+  <li><a href="#one-sided-alternatives" id="toc-one-sided-alternatives" class="nav-link" data-scroll-target="#one-sided-alternatives">One-sided alternatives</a></li>
+  </ul></li>
+  <li><a href="#statistical-applications-optional" id="toc-statistical-applications-optional" class="nav-link" data-scroll-target="#statistical-applications-optional">4. Statistical applications (optional)</a>
+  <ul class="collapse">
+  <li><a href="#optional-raw-data-exploration" id="toc-optional-raw-data-exploration" class="nav-link" data-scroll-target="#optional-raw-data-exploration">Optional raw-data exploration</a></li>
+  <li><a href="#software-verification" id="toc-software-verification" class="nav-link" data-scroll-target="#software-verification">Software verification</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../topics/hypothesis-testing/index.html">Topics</a></li><li class="breadcrumb-item"><a href="../../topics/hypothesis-testing/index.html">Hypothesis testing</a></li><li class="breadcrumb-item"><a href="../../topics/hypothesis-testing/independent-two-sample-t-test.html">Independent two-sample t-test</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Independent two-sample t-test</h1>
+</div>
+
+<div>
+  <div class="description">
+    Compare two independent population means with Welch’s t-test, a critical value, and reproducible software checks.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>You should already be familiar with sample means and sample standard deviations. If you want to go straight to the worked exercise, use <a href="#application-required">Application</a>; the derivations are in <a href="#theory-optional">Theory</a>, and software extensions are in <a href="#statistical-applications-optional">Statistical applications</a>. You can also download the <a href="data/independent-t-test.csv">practice data (CSV)</a> and <a href="downloads/independent-t-test.xlsx">Excel workbook</a> now.</p>
+<p><strong>Learning objectives:</strong> identify independent samples, calculate Welch’s statistic from supplied summaries, use the nearest-integer degrees-of-freedom rule, and interpret a critical-value decision. The required reading route is <strong>Overview → Application</strong>.</p>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">1. Overview</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The systolic blood pressure values in this lesson are synthetic and fictional. They were constructed for teaching and do not describe real patients or a real study.</p>
+</div>
+</div>
+<p>This lesson starts with <strong>supplied summary statistics</strong>. You do not need the individual observations for the required calculation.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 36%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th style="text-align: right;">Group A</th>
+<th style="text-align: right;">Group B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sample size</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td>Sample mean (mmHg)</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">135</td>
+</tr>
+<tr class="odd">
+<td>Sample standard deviation (mmHg)</td>
+<td style="text-align: right;"><span class="math inline">\(\sqrt{24}\)</span> = 4.899</td>
+<td style="text-align: right;"><span class="math inline">\(\sqrt{96}\)</span> = 9.798</td>
+</tr>
+</tbody>
+</table>
+<p>We ask whether the two population means differ. Define every subtraction as <strong>Group A minus Group B</strong>, and choose a two-sided significance level of <span class="math inline">\(\alpha=0.05\)</span> before making the decision.</p>
+<section id="suitability-checks" class="level3">
+<h3 class="anchored" data-anchor-id="suitability-checks">Suitability checks</h3>
+<p>Use an independent two-sample t-test when the outcome is quantitative, there are two distinct groups, and each person or unit contributes one observation to one group. If the same people are measured twice, or observations are explicitly matched, use a paired analysis instead.</p>
+<p>With samples this small, the method also relies on each population being roughly bell-shaped without extreme values that dominate its group. Plots can identify concerns, but they do not provide a pass/fail certificate; optional diagnostics appear in <a href="#theory-optional">Theory</a>.</p>
+<p>We use <strong>Welch’s two-sample t-test</strong> as the default. It permits the two population variances to differ and remains appropriate when the sample sizes differ <span class="citation" data-cites="welch1947 nistTwoSample">(<a href="#ref-welch1947" role="doc-biblioref">Welch 1947</a>; <a href="#ref-nistTwoSample" role="doc-biblioref">National Institute of Standards and Technology, n.d.</a>)</span>. It does not solve dependence, clustering, poor sampling, influential data errors, or a weak study design.</p>
+<p>The starting claim is that the two population means have no difference. The competing claim is that they differ. In symbols,</p>
+<p><span class="math display">\[
+H_0:\mu_A-\mu_B=0
+\qquad\text{versus}\qquad
+H_1:\mu_A-\mu_B\ne0.
+\]</span></p>
+<p>Here <span class="math inline">\(H_0\)</span> is the <strong>null hypothesis</strong> (the starting claim) and <span class="math inline">\(H_1\)</span> is the <strong>alternative hypothesis</strong> (the competing claim). The symbols <span class="math inline">\(\mu_A\)</span> and <span class="math inline">\(\mu_B\)</span> denote the population averages, which we estimate using the sample means. The <strong>standard error (SE)</strong> describes the typical sample-to-sample variation in the difference of means. The <strong>t statistic</strong> expresses the observed difference in SE units after accounting for the starting value of zero. The <strong>degrees-of-freedom (df) calculation</strong> chooses the row of the t table. A <strong>critical value</strong> is the cutoff beyond which we reject the starting claim.</p>
+<p>Setting <span class="math inline">\(\alpha=.05\)</span> aims, in repeated studies where the starting claim and model are true, to falsely declare a difference about 5 times in 100. The core recipe is: subtract the means, build the SE from the two group contributions, express the null-adjusted difference in SE units, calculate Welch df, and compare <span class="math inline">\(|t|\)</span> with the two-sided cutoff. No p-value is required for this decision.</p>
+</section>
+</section>
+<section id="application-required" class="level2">
+<h2 class="anchored" data-anchor-id="application-required">2. Application (required)</h2>
+<section id="hand-calculation-ten-steps" class="level3">
+<h3 class="anchored" data-anchor-id="hand-calculation-ten-steps">Hand calculation: ten steps</h3>
+<p>The test uses only the supplied <span class="math inline">\(n\)</span>, mean, and standard deviation for each group. Keep full precision through the calculation and round only reported results.</p>
+<ol type="1">
+<li><p><strong>Fix the direction and decision rule.</strong> Work with <span class="math inline">\(A-B\)</span>, use a two-sided test, and set <span class="math inline">\(\alpha=0.05\)</span>. We will reject <span class="math inline">\(H_0\)</span> when <span class="math inline">\(|t|\)</span> exceeds the two-sided critical value.</p></li>
+<li><p><strong>Record the sample sizes.</strong> <span class="math inline">\(n_A=8\)</span> and <span class="math inline">\(n_B=8\)</span>.</p></li>
+<li><p><strong>Record the means and standard deviations.</strong> <span class="math inline">\(\bar x_A=123\)</span>, <span class="math inline">\(\bar x_B=135\)</span>, <span class="math inline">\(s_A=\sqrt{24}=4.899\)</span>, and <span class="math inline">\(s_B=\sqrt{96}=9.798\)</span> mmHg.</p></li>
+<li><p><strong>Calculate the observed mean difference.</strong></p>
+<p><span class="math display">\[
+\bar x_A-\bar x_B=123-135=-12\ \text{mmHg}.
+\]</span></p></li>
+<li><p><strong>Calculate each group’s contribution to the squared standard error.</strong></p>
+<p><span class="math display">\[
+\frac{s_A^2}{n_A}=\frac{24}{8}=3,
+\qquad
+\frac{s_B^2}{n_B}=\frac{96}{8}=12.
+\]</span></p></li>
+<li><p><strong>Combine the contributions to obtain the standard error.</strong></p>
+<p><span class="math display">\[
+SE=\sqrt{\frac{s_A^2}{n_A}+\frac{s_B^2}{n_B}}
+=\sqrt{3+12}
+=\sqrt{15}
+=3.873\ \text{mmHg}.
+\]</span></p></li>
+<li><p><strong>Form the Welch t statistic under the null difference of zero.</strong></p>
+<p><span class="math display">\[
+t=\frac{(\bar x_A-\bar x_B)-0}{SE}
+=\frac{-12}{3.872983}
+=-3.098.
+\]</span></p></li>
+<li><p><strong>Calculate the Welch–Satterthwaite degrees of freedom.</strong></p>
+<p>The two terms in the denominator are</p>
+<p><span class="math display">\[
+\frac{(3)^2}{8-1}=\frac{9}{7}=1.285714,
+\qquad
+\frac{(12)^2}{8-1}=\frac{144}{7}=20.571429.
+\]</span></p>
+<p><span class="math display">\[
+\nu=
+\frac{\left(s_A^2/n_A+s_B^2/n_B\right)^2}
+{\dfrac{(s_A^2/n_A)^2}{n_A-1}+\dfrac{(s_B^2/n_B)^2}{n_B-1}}
+=\frac{15^2}{9/7+144/7}
+=10.294118.
+\]</span></p></li>
+<li><p><strong>Apply the course table convention.</strong> Round the positive Welch degrees of freedom to the nearest integer, with an exact half rounded up:</p>
+<p><span class="math display">\[
+\nu_{\text{class}}=10.294118\longrightarrow 10.
+\]</span></p>
+<p>For a two-sided test with <span class="math inline">\(\alpha=0.05\)</span>, the critical value is</p>
+<p><span class="math display">\[
+t^*=t_{1-\alpha/2,\,10}=t_{0.975,\,10}
+=2.228.
+\]</span></p>
+<p>The relevant excerpt from a two-sided t table is shown below. The selected cell is the row for df = 10 and the column for <span class="math inline">\(\alpha=0.05\)</span>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">df</th>
+<th style="text-align: right;"><span class="math inline">\(\alpha=.10\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\alpha=.05\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\alpha=.01\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1.860</td>
+<td style="text-align: right;">2.306</td>
+<td style="text-align: right;">3.355</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1.833</td>
+<td style="text-align: right;">2.262</td>
+<td style="text-align: right;">3.250</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>10</strong></td>
+<td style="text-align: right;">1.812</td>
+<td style="text-align: right;"><strong>2.228</strong></td>
+<td style="text-align: right;">3.169</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1.796</td>
+<td style="text-align: right;">2.201</td>
+<td style="text-align: right;">3.106</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">1.782</td>
+<td style="text-align: right;">2.179</td>
+<td style="text-align: right;">3.055</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>Compare and interpret.</strong> <span class="math inline">\(|t|=3.098\)</span> is greater than <span class="math inline">\(t^*=2.228\)</span>, so <strong>reject <span class="math inline">\(H_0\)</span></strong> at the 5% significance level. Group A’s sample mean is 12 mmHg lower than Group B’s. Under the model assumptions, the data provide evidence that the population means differ. This result supports an association; it establishes a causal effect only when the study design justifies causal inference.</p></li>
+</ol>
+<p>This required decision uses a critical value. A p-value is not needed.</p>
+</section>
+<section id="spreadsheet-practice" class="level3">
+<h3 class="anchored" data-anchor-id="spreadsheet-practice">Spreadsheet practice</h3>
+<p>Download the <a href="data/independent-t-test.csv">practice data (CSV)</a> and the <a href="downloads/independent-t-test.xlsx">two-sheet Excel workbook</a>. The workbook sheets are named <strong>Practice</strong> and <strong>Worked solution</strong>. All summary statistics needed for the calculation are supplied; the required spreadsheet exercise does not calculate them from raw observations.</p>
+<p>Follow these numbered phases so that the spreadsheet mirrors the hand calculation:</p>
+<ol type="1">
+<li><strong>Enter the supplied inputs.</strong> Use rows 5–10. Row 5 contains the group headers; rows 6–8 contain <span class="math inline">\(n\)</span>, mean, and SD; row 9 contains <span class="math inline">\(\alpha\)</span>; row 10 contains the hypothesized difference.</li>
+<li><strong>Build the Welch statistic.</strong> Use rows 13–20 to calculate the observed difference, the two group contributions, the standard error, the t statistic, and the fractional Welch degrees of freedom.</li>
+<li><strong>Apply the class decision rule.</strong> Use rows 21–24 to round the degrees of freedom explicitly, obtain the two-sided critical value, compare <span class="math inline">\(|t|\)</span> with it, and state the decision.</li>
+</ol>
+<p>The input block must have this layout:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 16%">
+<col style="width: 22%">
+<col style="width: 22%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Row</th>
+<th>Column A: label</th>
+<th style="text-align: right;">Column B: Group A</th>
+<th style="text-align: right;">Column C: Group B</th>
+<th>Column D: notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td>Supplied information</td>
+<td style="text-align: right;">Group A</td>
+<td style="text-align: right;">Group B</td>
+<td>Meaning</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td>n</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td>Supplied</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td>Mean</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">135</td>
+<td>Supplied (mmHg)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td>SD</td>
+<td style="text-align: right;">4.898979</td>
+<td style="text-align: right;">9.797959</td>
+<td>Supplied (mmHg)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td>Alpha</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;"></td>
+<td>Two-sided</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td>Hypothesized difference</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"></td>
+<td>Group A minus Group B</td>
+</tr>
+</tbody>
+</table>
+<p>The SDs are displayed to six decimal places, while the workbook retains their full stored values (<span class="math inline">\(\sqrt{24}\)</span> and <span class="math inline">\(\sqrt{96}\)</span>) for calculation.</p>
+<p>Enter each formula separately. Do not combine steps into one long formula.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 18%">
+<col style="width: 18%">
+<col style="width: 25%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Cell</th>
+<th>Column A: label</th>
+<th>Formula to enter</th>
+<th style="text-align: right;">Expected result</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>B13</td>
+<td>Difference (A − B)</td>
+<td><code>=B7-C7</code></td>
+<td style="text-align: right;">-12</td>
+<td>Subtract the means in the chosen order.</td>
+</tr>
+<tr class="even">
+<td>B14</td>
+<td>Group A contribution</td>
+<td><code>=B8^2/B6</code></td>
+<td style="text-align: right;">3</td>
+<td>Square A’s supplied SD and divide by its sample size.</td>
+</tr>
+<tr class="odd">
+<td>B15</td>
+<td>Group B contribution</td>
+<td><code>=C8^2/C6</code></td>
+<td style="text-align: right;">12</td>
+<td>Repeat for Group B.</td>
+</tr>
+<tr class="even">
+<td>B16</td>
+<td>Standard error</td>
+<td><code>=SQRT(B14+B15)</code></td>
+<td style="text-align: right;">3.873</td>
+<td>Take the square root of the sum.</td>
+</tr>
+<tr class="odd">
+<td>B17</td>
+<td>t statistic</td>
+<td><code>=(B13-B10)/B16</code></td>
+<td style="text-align: right;">-3.098</td>
+<td>Express the difference from the null in SE units.</td>
+</tr>
+<tr class="even">
+<td>B18</td>
+<td>df denominator term A</td>
+<td><code>=B14^2/(B6-1)</code></td>
+<td style="text-align: right;">1.285714</td>
+<td>Calculate A’s term in the df denominator.</td>
+</tr>
+<tr class="odd">
+<td>B19</td>
+<td>df denominator term B</td>
+<td><code>=B15^2/(C6-1)</code></td>
+<td style="text-align: right;">20.571429</td>
+<td>Calculate B’s term in the df denominator.</td>
+</tr>
+<tr class="even">
+<td>B20</td>
+<td>Welch df</td>
+<td><code>=(B14+B15)^2/(B18+B19)</code></td>
+<td style="text-align: right;">10.294118</td>
+<td>Divide the squared sum by the two denominator terms.</td>
+</tr>
+<tr class="odd">
+<td>B21</td>
+<td>Class df</td>
+<td><code>=ROUND(B20,0)</code></td>
+<td style="text-align: right;">10</td>
+<td>Select the nearest whole-number table row.</td>
+</tr>
+<tr class="even">
+<td>B22</td>
+<td>Two-sided critical value</td>
+<td><code>=T.INV.2T(B9,B21)</code></td>
+<td style="text-align: right;">2.228</td>
+<td>Use alpha and the explicitly rounded df.</td>
+</tr>
+<tr class="odd">
+<td>B23</td>
+<td>Absolute t</td>
+<td><code>=ABS(B17)</code></td>
+<td style="text-align: right;">3.098</td>
+<td>Count departures in either direction.</td>
+</tr>
+<tr class="even">
+<td>B24</td>
+<td>Decision</td>
+<td><code>=IF(B23&gt;B22,"Reject H0","Do not reject H0")</code></td>
+<td style="text-align: right;">Reject H0</td>
+<td>Compare the absolute statistic with the cutoff.</td>
+</tr>
+</tbody>
+</table>
+<p><code>ROUND(B20,0)</code> makes the course convention visible: for a positive value, Excel rounds an exact half up. Supplying the integer in B21 to <code>T.INV.2T</code> also avoids relying on the function’s implicit truncation of a non-integer degrees-of-freedom argument <span class="citation" data-cites="microsoftTInv2t">(<a href="#ref-microsoftTInv2t" role="doc-biblioref">Microsoft Support, n.d.-a</a>)</span>.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Keep precision in the cells">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Keep precision in the cells
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Format cells to show a convenient number of decimal places, but do not replace formulas with rounded values. Premature rounding can change a statistic near a critical boundary.</p>
+</div>
+</div>
+</section>
+<section id="self-checks" class="level3">
+<h3 class="anchored" data-anchor-id="self-checks">Self-checks</h3>
+<p>If the subtraction were changed to Group B minus Group A, what would change?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Show answer 1">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Show answer 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The estimated difference and <span class="math inline">\(t\)</span> statistic would become positive, but <span class="math inline">\(|t|\)</span>, the critical value, and the two-sided decision would remain unchanged.</p>
+</div>
+</div>
+</div>
+<p>Why do we compare <span class="math inline">\(|t|\)</span> with a positive critical value?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Show answer 2">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Show answer 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The two-sided alternative includes departures in both directions. Taking <span class="math inline">\(|t|\)</span> measures how far the statistic lies from zero, regardless of sign.</p>
+</div>
+</div>
+</div>
+<p>Suppose <span class="math inline">\(|t|\)</span> had been 2.10 with the same critical value. What would the course decision be?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Show answer 3">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Show answer 3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Because <span class="math inline">\(2.10&lt;2.228\)</span>, we would not reject <span class="math inline">\(H_0\)</span> at the 5% level. That would not prove the means equal.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="common-mistakes" class="level3">
+<h3 class="anchored" data-anchor-id="common-mistakes">Common mistakes</h3>
+<ul>
+<li>Treating repeated measurements or matched observations as independent samples.</li>
+<li>Reversing the subtraction partway through the calculation; write <strong>A − B</strong> beside every difference.</li>
+<li>Choosing the pooled test after a preliminary variance test. Welch is the default here and does not require evidence that variances differ.</li>
+<li>Letting <code>T.INV.2T</code> silently truncate a fractional df instead of applying the course’s explicit nearest-integer rule.</li>
+<li>Rounding SDs, SE, t, or df inside the calculation rather than only changing their display.</li>
+<li>Comparing a signed t statistic with a positive two-sided cutoff instead of comparing <span class="math inline">\(|t|\)</span>.</li>
+<li>Claiming that rejection proves a causal effect when the design does not support causality.</li>
+</ul>
+</section>
+</section>
+<section id="theory-optional" class="level2">
+<h2 class="anchored" data-anchor-id="theory-optional">3. Theory (optional)</h2>
+<div class="optional-content callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Optional — not covered or required for this course.</p>
+</div>
+</div>
+<section id="assumptions-and-diagnostic-questions" class="level3">
+<h3 class="anchored" data-anchor-id="assumptions-and-diagnostic-questions">Assumptions and diagnostic questions</h3>
+<p>Treat assumptions as questions about how the data arose. A normality test or variance test is not a pass/fail gate for choosing a method.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Issue</th>
+<th>Question to ask</th>
+<th>What a diagnostic can and cannot tell you</th>
+<th>Sensible response</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Independence</td>
+<td>Were units sampled independently, assigned independently, and measured once? Is there clustering by household, class, clinic, or site?</td>
+<td>A plot or normality test cannot verify independence. This comes from the design and data-collection process.</td>
+<td>Use a paired, clustered, or multilevel method when the design creates dependence.</td>
+</tr>
+<tr class="even">
+<td>Outcome distribution</td>
+<td>Within each population, are severe skew, heavy tails, or unusual values plausible?</td>
+<td>Dot plots and Q–Q plots can reveal data errors and influential observations. With only eight observations per group, they cannot prove normality or reliably rule out important departures.</td>
+<td>Verify unusual values, report robust summaries, and consider a sensitivity analysis when conclusions depend on a few observations.</td>
+</tr>
+<tr class="odd">
+<td>Variances</td>
+<td>Could population variances differ?</td>
+<td>A preliminary equality-of-variance test is noisy and creates an unreliable two-stage procedure <span class="citation" data-cites="zimmerman2004">(<a href="#ref-zimmerman2004" role="doc-biblioref">Zimmerman 2004</a>)</span>.</td>
+<td>Use Welch by default; it already allows unequal variances.</td>
+</tr>
+<tr class="even">
+<td>Sampling and assignment</td>
+<td>From what population were units sampled, and how were groups formed?</td>
+<td>The t-test cannot repair selection bias, confounding, or non-random treatment assignment.</td>
+<td>Match the interpretation to the design: sampling supports generalization; random assignment supports causal claims.</td>
+</tr>
+</tbody>
+</table>
+<div class="optional-content callout callout-style-default callout-note callout-titled" title="Optional distribution diagnostics in base R">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional distribution diagnostics in base R
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Q–Q plots compare each ordered sample with the pattern expected from a normal distribution. Large systematic curves or isolated points deserve investigation; close alignment is reassuring but cannot prove population normality.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(a, <span class="at">main =</span> <span class="st">"Group A"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"#2C7FB8"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(a, <span class="at">col =</span> <span class="st">"#233444"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(b, <span class="at">main =</span> <span class="st">"Group B"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"#D95F0E"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(b, <span class="at">col =</span> <span class="st">"#233444"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="independent-two-sample-t-test_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" alt="Normal Q-Q plots for Group A and Group B. The eight points in each group lie close to their reference line." width="768"></p>
+<figcaption>Q–Q plots can flag strong departures, but eight observations provide limited diagnostic resolution.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Shapiro–Wilk tests provide a formal check for departures from normality:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(a)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  a
+W = 0.97486, p-value = 0.9332</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(b)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  b
+W = 0.97486, p-value = 0.9332</code></pre>
+</div>
+</div>
+<p>With only 8 observations per group, these tests have low power: a large p-value means that this small sample did not reveal a clear departure, not that the population has been proved normal. A small p-value also needs follow-up with the plot and data context rather than automatic rejection of the method.</p>
+<p>The sample variances are <span class="math inline">\(s_A^2=24\)</span> and <span class="math inline">\(s_B^2=96\)</span>. We describe that difference and use Welch throughout. An F test such as <code>var.test(a, b)</code> would itself rely strongly on normal populations, and using it as a gate to switch between pooled and Welch tests adds avoidable error. Welch does not require the variances to be equal or to be proved unequal.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="why-welchs-standard-error-has-this-form" class="level3">
+<h3 class="anchored" data-anchor-id="why-welchs-standard-error-has-this-form">Why Welch’s standard error has this form</h3>
+<p>For independent samples,</p>
+<p><span class="math display">\[
+E(\bar X_A-\bar X_B)=\mu_A-\mu_B
+\]</span></p>
+<p>and independence makes the covariance term zero, so</p>
+<p><span class="math display">\[
+\operatorname{Var}(\bar X_A-\bar X_B)
+=\operatorname{Var}(\bar X_A)+\operatorname{Var}(\bar X_B)
+=\frac{\sigma_A^2}{n_A}+\frac{\sigma_B^2}{n_B}.
+\]</span></p>
+<p>The population variances are unknown. Substituting the independent sample-variance estimates gives</p>
+<p><span class="math display">\[
+\widehat{\operatorname{SE}}(\bar X_A-\bar X_B)
+=\sqrt{\frac{s_A^2}{n_A}+\frac{s_B^2}{n_B}}.
+\]</span></p>
+<p>The denominator is random. The Welch–Satterthwaite approximation can be obtained by matching its first two moments. Let</p>
+<p><span class="math display">\[
+Q=\frac{S_A^2}{n_A}+\frac{S_B^2}{n_B}.
+\]</span></p>
+<p>For independent normal samples, <span class="math inline">\(E(S_i^2)=\sigma_i^2\)</span> and <span class="math inline">\(\operatorname{Var}(S_i^2)=2\sigma_i^4/(n_i-1)\)</span>. Therefore</p>
+<p><span class="math display">\[
+E(Q)=V=\frac{\sigma_A^2}{n_A}+\frac{\sigma_B^2}{n_B}
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\operatorname{Var}(Q)=2\left[
+\frac{\sigma_A^4}{n_A^2(n_A-1)}+
+\frac{\sigma_B^4}{n_B^2(n_B-1)}
+\right].
+\]</span></p>
+<p>Approximate <span class="math inline">\(Q\)</span> by a scaled chi-square variable <span class="math inline">\(c\chi_\nu^2\)</span>. Matching the mean and variance gives <span class="math inline">\(c\nu=V\)</span> and <span class="math inline">\(2c^2\nu=\operatorname{Var}(Q)\)</span>. Eliminating <span class="math inline">\(c\)</span> gives</p>
+<p><span class="math display">\[
+\nu=\frac{2V^2}{\operatorname{Var}(Q)}.
+\]</span></p>
+<p>Replacing the unknown population variance components with their sample estimates produces</p>
+<p><span class="math display">\[
+\nu=
+\frac{\left(s_A^2/n_A+s_B^2/n_B\right)^2}
+{\dfrac{(s_A^2/n_A)^2}{n_A-1}+\dfrac{(s_B^2/n_B)^2}{n_B-1}}.
+\]</span></p>
+<p>This moment matching is why <span class="math inline">\(\nu\)</span> can be fractional: it is an effective shape parameter for the reference distribution, not a literal count of observations. Software normally retains its fractional value.</p>
+</section>
+<section id="why-the-pooled-test-is-exact-under-stronger-assumptions" class="level3">
+<h3 class="anchored" data-anchor-id="why-the-pooled-test-is-exact-under-stronger-assumptions">Why the pooled test is exact under stronger assumptions</h3>
+<p>If both samples are normal and share one population variance <span class="math inline">\(\sigma^2\)</span>, define</p>
+<p><span class="math display">\[
+s_p^2=
+\frac{(n_A-1)s_A^2+(n_B-1)s_B^2}
+{n_A+n_B-2}.
+\]</span></p>
+<p>Under <span class="math inline">\(H_0\)</span>, the standardized mean difference based on the true variance,</p>
+<p><span class="math display">\[
+Z=\frac{\bar X_A-\bar X_B}
+{\sigma\sqrt{1/n_A+1/n_B}},
+\]</span></p>
+<p>has a standard normal distribution. The pooled within-group sum of squares satisfies</p>
+<p><span class="math display">\[
+U=\frac{(n_A+n_B-2)s_p^2}{\sigma^2}
+\sim\chi^2_{n_A+n_B-2},
+\]</span></p>
+<p>and, for normal samples, <span class="math inline">\(Z\)</span> and <span class="math inline">\(U\)</span> are independent. This normal/chi-square independence is a consequence of Cochran’s theorem; we use it here without proving the theorem. Therefore</p>
+<p><span class="math display">\[
+\frac{Z}{\sqrt{U/(n_A+n_B-2)}}
+=\frac{\bar X_A-\bar X_B}
+{s_p\sqrt{1/n_A+1/n_B}}
+\sim t_{n_A+n_B-2}.
+\]</span></p>
+<p>That exact result requires normality and a common population variance. Welch’s fractional-degree-of-freedom reference distribution is approximate when population variances differ. With non-normal populations, both methods increasingly rely on large-sample behavior.</p>
+<p>In this example <span class="math inline">\(n_A=n_B\)</span>. That equality makes the Welch and pooled standard errors, and therefore their t statistics, identical even though the sample variances differ. Their degrees of freedom are different: Welch gives 10.294118, while the pooled test gives <span class="math inline">\(8+8-2=14\)</span>. This convenient coincidence does not hold in general when sample sizes differ.</p>
+</section>
+<section id="confidence-interval" class="level3">
+<h3 class="anchored" data-anchor-id="confidence-interval">Confidence interval</h3>
+<p>Using the fractional Welch degrees of freedom, a 95% confidence interval for <span class="math inline">\(\mu_A-\mu_B\)</span> is</p>
+<p><span class="math display">\[
+(\bar x_A-\bar x_B)\ \pm\ t_{0.975,\nu}\,SE
+=-12\ \pm\ 2.220(3.873)
+=\bigl(-20.596,\ -3.404\bigr)\ \text{mmHg}.
+\]</span></p>
+<p>The interval estimates the range of population mean differences compatible with the model and data. It excludes zero and is entirely negative, agreeing with the two-sided test while also showing the plausible direction and magnitude.</p>
+</section>
+<section id="one-sided-alternatives" class="level3">
+<h3 class="anchored" data-anchor-id="one-sided-alternatives">One-sided alternatives</h3>
+<p>A one-sided question must be chosen before inspecting the results. For <span class="math inline">\(H_1:\mu_A-\mu_B&lt;0\)</span>, the 5% critical boundary using the class degrees of freedom is <span class="math inline">\(-t_{0.95,10}=-1.812\)</span>. Because -3.098 is below that boundary, the one-sided test rejects <span class="math inline">\(H_0\)</span>. The opposite alternative, <span class="math inline">\(H_1:\mu_A-\mu_B&gt;0\)</span>, would not. Choosing the direction after seeing the sign of the estimate invalidates the intended error rate.</p>
+</section>
+</section>
+<section id="statistical-applications-optional" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-applications-optional">4. Statistical applications (optional)</h2>
+<div class="optional-content callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Optional — not covered or required for this course.</p>
+</div>
+</div>
+<p>Software commonly reports a <strong>p-value</strong>: assuming the null hypothesis and model, it is the probability of obtaining a test statistic at least as extreme as the one observed. For this two-sided test, departures in both directions count. It is not the probability that the null hypothesis is true. A p-value below the prespecified <span class="math inline">\(\alpha=.05\)</span> leads to rejection under the software’s fractional-df convention. A confidence interval additionally describes the estimated difference and its uncertainty; see the optional theory above.</p>
+<section id="optional-raw-data-exploration" class="level3">
+<h3 class="anchored" data-anchor-id="optional-raw-data-exploration">Optional raw-data exploration</h3>
+<div class="optional-content callout callout-style-default callout-note callout-titled" title="Expand to see the observations and a dot plot">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Expand to see the observations and a dot plot
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The required calculation above deliberately starts from supplied summaries. The individual values below are provided only for visualization and software practice.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Group</th>
+<th style="text-align: right;">SBP (mmHg)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">116</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">118</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">120</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">122</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">124</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">126</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">128</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">130</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">121</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">125</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">129</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">133</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">137</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">141</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">145</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">149</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="independent-two-sample-t-test_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" alt="Dot plot of systolic blood pressure values for Group A and Group B. Group B is shifted higher and is more dispersed." width="672"></p>
+<figcaption>Individual observations, shown only for optional diagnostic exploration.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="software-verification" class="level3">
+<h3 class="anchored" data-anchor-id="software-verification">Software verification</h3>
+<p>Software ordinarily uses the fractional Welch degrees of freedom. For this example, that gives <span class="math inline">\(t^*=2.220\)</span>, compared with 2.228 under the course’s integer-table convention. The decision is the same.</p>
+<section id="excel-worksheet-function" class="level4">
+<h4 class="anchored" data-anchor-id="excel-worksheet-function">Excel worksheet function</h4>
+<p>Open <a href="data/independent-t-test.csv">the CSV</a> in Excel. Its columns are <code>group</code> and <code>sbp</code>, with Group A in rows 2–9 and Group B in rows 10–17. Enter</p>
+<pre class="text"><code>=T.TEST(B2:B9,B10:B17,2,3)</code></pre>
+<p>Here <code>2</code> requests a two-sided test and <code>3</code> requests the unequal-variance (Welch) version. Excel returns 0.010915000. This is a p-value and is shown only as a software cross-check; it is not required for the course’s critical-value calculation <span class="citation" data-cites="microsoftTtest">(<a href="#ref-microsoftTtest" role="doc-biblioref">Microsoft Support, n.d.-b</a>)</span>.</p>
+<p>The saved native verification was recalculated and reopened without a repair prompt in Microsoft Excel for Mac 16.113; the linked provenance records the input and output fingerprints.</p>
+<p><strong>Saved native Excel worksheet result</strong> (<a href="_examples/independent-t-test/excel-output.csv">CSV</a>; provenance: <a href="_examples/independent-t-test/provenance.json">JSON</a>)</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Item</th>
+<th style="text-align: left;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mean difference (A - B)</td>
+<td style="text-align: left;">-12.000000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">t statistic</td>
+<td style="text-align: left;">-3.098386677</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fractional Welch df</td>
+<td style="text-align: left;">10.294117647</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T.TEST two-sided p-value</td>
+<td style="text-align: left;">0.010915000278</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="excel-analysis-toolpak" class="level4">
+<h4 class="anchored" data-anchor-id="excel-analysis-toolpak">Excel Analysis ToolPak</h4>
+<p>Enable the Analysis ToolPak if <strong>Data Analysis</strong> is absent from the <strong>Data</strong> tab.</p>
+<ul>
+<li><strong>Windows:</strong> choose <strong>File &gt; Options &gt; Add-ins</strong>. In <strong>Manage</strong>, select <strong>Excel Add-ins</strong>, choose <strong>Go</strong>, tick <strong>Analysis ToolPak</strong>, and choose <strong>OK</strong>.</li>
+<li><strong>Mac:</strong> choose <strong>Tools &gt; Excel Add-ins</strong>, tick <strong>Analysis ToolPak</strong>, and choose <strong>OK</strong>.</li>
+</ul>
+<p>Then choose <strong>Data &gt; Data Analysis &gt; t-Test: Two-Sample Assuming Unequal Variances</strong>. Select the eight Group A values as Variable 1 and the eight Group B values as Variable 2, enter <code>0</code> for Hypothesized Mean Difference, tick <strong>Labels</strong> only if the selected ranges include headings, set Alpha to <code>0.05</code>, choose an output range or new worksheet, and run the analysis <span class="citation" data-cites="microsoftToolpak">(<a href="#ref-microsoftToolpak" role="doc-biblioref">Microsoft Support, n.d.-c</a>)</span>.</p>
+<p>The ToolPak rounds Welch degrees of freedom to the nearest integer, whereas worksheet <code>T.TEST</code>, R, and SciPy use the fractional value. In this dataset the ToolPak reports df 10; its critical value therefore matches the class workbook.</p>
+<p><strong>Saved native Excel Analysis ToolPak output</strong> (<a href="_examples/independent-t-test/excel-toolpak.csv">CSV</a>)</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Statistic</th>
+<th style="text-align: left;">Group A / result</th>
+<th style="text-align: left;">Group B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mean</td>
+<td style="text-align: left;">123</td>
+<td style="text-align: left;">135</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Variance</td>
+<td style="text-align: left;">24</td>
+<td style="text-align: left;">96</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Observations</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hypothesized Mean Difference</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">t Stat</td>
+<td style="text-align: left;">-3.098386677</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P(T&lt;=t) one-tail</td>
+<td style="text-align: left;">0.005640808734</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">t Critical one-tail</td>
+<td style="text-align: left;">1.812461123</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P(T&lt;=t) two-tail</td>
+<td style="text-align: left;">0.01128161747</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">t Critical two-tail</td>
+<td style="text-align: left;">2.228138852</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>The native ToolPak two-sided p-value is 0.011281617468, slightly larger than the worksheet <code>T.TEST</code> result because the ToolPak uses the rounded df of 10.</p>
+<p>Both Excel p-values are below .05, so both methods reject equal population means. The negative t statistic reflects the chosen A minus B order. In the ToolPak table, use <strong>P(T&lt;=t) two-tail</strong> for this two-sided question; the one-tail rows answer a different question.</p>
+</section>
+<section id="r" class="level4">
+<h4 class="anchored" data-anchor-id="r">R</h4>
+<p>R’s <code>t.test()</code> uses Welch’s method by default, but setting <code>var.equal = FALSE</code> makes the choice explicit <span class="citation" data-cites="rTtest">(<a href="#ref-rTtest" role="doc-biblioref">R Core Team, n.d.</a>)</span>.</p>
+<p>Start R or RStudio with the project folder as the working directory, then run the following code. It uses only R’s built-in <code>stats</code> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"topics/hypothesis-testing/data/independent-t-test.csv"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>a_r <span class="ot">&lt;-</span> dat<span class="sc">$</span>sbp[dat<span class="sc">$</span>group <span class="sc">==</span> <span class="st">"A"</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>b_r <span class="ot">&lt;-</span> dat<span class="sc">$</span>sbp[dat<span class="sc">$</span>group <span class="sc">==</span> <span class="st">"B"</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  a_r,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  b_r,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">alternative =</span> <span class="st">"two.sided"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu =</span> <span class="dv">0</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">var.equal =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">conf.level =</span> <span class="fl">0.95</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  a_r and b_r
+t = -3.0984, df = 10.294, p-value = 0.01092
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -20.596241  -3.403759
+sample estimates:
+mean of x mean of y 
+      123       135 </code></pre>
+</div>
+</div>
+<p>The output reports <span class="math inline">\(t=-3.098\)</span>, fractional df <span class="math inline">\(=10.294\)</span>, the same 95% confidence interval shown above, and the two-sided p-value 0.010915.</p>
+<p>Because the p-value is below .05 and the interval excludes zero, this output supports a population mean difference under the model. The sample estimates show Group A lower than Group B.</p>
+</section>
+<section id="python-with-scipy" class="level4">
+<h4 class="anchored" data-anchor-id="python-with-scipy">Python with SciPy</h4>
+<p>SciPy’s <code>ttest_ind()</code> defaults to the pooled test, so <code>equal_var=False</code> is essential for Welch’s method <span class="citation" data-cites="scipyTtestInd">(<a href="#ref-scipyTtestInd" role="doc-biblioref">SciPy Developers, n.d.</a>)</span>. From the project root, create an environment, install the pinned validation dependencies, and run the complete reproducible script:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv .venv</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements-validation.txt</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> topics/hypothesis-testing/_examples/independent-t-test/example.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The essential analysis can be written compactly. This version imports the same CSV and makes the unequal-variance choice explicit:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> csv</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"topics/hypothesis-testing/data/independent-t-test.csv"</span>, newline<span class="op">=</span><span class="st">""</span>) <span class="im">as</span> f:</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> <span class="bu">list</span>(csv.DictReader(f))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [<span class="bu">float</span>(row[<span class="st">"sbp"</span>]) <span class="cf">for</span> row <span class="kw">in</span> rows <span class="cf">if</span> row[<span class="st">"group"</span>] <span class="op">==</span> <span class="st">"A"</span>]</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> [<span class="bu">float</span>(row[<span class="st">"sbp"</span>]) <span class="cf">for</span> row <span class="kw">in</span> rows <span class="cf">if</span> row[<span class="st">"group"</span>] <span class="op">==</span> <span class="st">"B"</span>]</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> stats.ttest_ind(a, b, equal_var<span class="op">=</span><span class="va">False</span>, alternative<span class="op">=</span><span class="st">"two-sided"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"t=</span><span class="sc">{</span>result<span class="sc">.</span>statistic<span class="sc">:.9f}</span><span class="ss">, df=</span><span class="sc">{</span>result<span class="sc">.</span>df<span class="sc">:.9f}</span><span class="ss">, p=</span><span class="sc">{</span>result<span class="sc">.</span>pvalue<span class="sc">:.12f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The complete verification script is <a href="_examples/independent-t-test/example.py">example.py</a>, its saved console output is <a href="_examples/independent-t-test/python-output.txt">python-output.txt</a>, and the cross-software environment record is <a href="_examples/independent-t-test/provenance.json">provenance.json</a>. Saved output:</p>
+<pre class="text"><code>input_md5=c8273388b3cb789fcbb53288a13ac818
+group_A_n=8
+group_A_mean=123
+group_A_sd=4.8989794855663558
+group_B_n=8
+group_B_mean=135
+group_B_sd=9.7979589711327115
+mean_difference_A_minus_B=-12
+standard_error=3.872983346207417
+t_statistic=-3.0983866769659336
+degrees_of_freedom=10.294117647058822
+p_value_two_sided=0.010915000277860675
+ci_95_lower=-20.596240505819864
+ci_95_upper=-3.4037594941801377
+df_class=10
+critical_t_df_class=2.2281388519862739
+critical_t_full_df=2.219539754602263
+numpy_version=2.5.3
+scipy_version=1.18.1
+python_version=3.14.6</code></pre>
+<p>Across R, SciPy, and Excel’s <code>T.TEST(...,2,3)</code>, expect the same difference (-12.000), standard error (3.873), t statistic (-3.098), fractional Welch df (10.294 where reported), and two-sided inference, apart from display rounding.</p>
+<p>In the saved Python output, <code>t_statistic</code> is the signed t value, <code>degrees_of_freedom</code> is the fractional Welch df, and <code>p_value_two_sided</code> is the two-sided p-value. The small p-value and entirely negative confidence interval support the same conclusion as R. These software results agree with the required critical-value decision for this example.</p>
+</section>
+</section>
+<section id="further-reading" class="level3">
+<h3 class="anchored" data-anchor-id="further-reading">Further reading</h3>
+<ul>
+<li><span class="citation" data-cites="welch1947">Welch (<a href="#ref-welch1947" role="doc-biblioref">1947</a>)</span> introduced the unequal-variance approximation used here. Read it for the original argument behind the effective degrees of freedom.</li>
+<li><span class="citation" data-cites="nistTwoSample">National Institute of Standards and Technology (<a href="#ref-nistTwoSample" role="doc-biblioref">n.d.</a>)</span> gives a compact reference for the pooled and unequal-variance two-sample formulas.</li>
+<li><span class="citation" data-cites="rTtest">R Core Team (<a href="#ref-rTtest" role="doc-biblioref">n.d.</a>)</span> and <span class="citation" data-cites="scipyTtestInd">SciPy Developers (<a href="#ref-scipyTtestInd" role="doc-biblioref">n.d.</a>)</span> document the exact arguments used in the reproducible software checks.</li>
+<li><span class="citation" data-cites="microsoftTtest">Microsoft Support (<a href="#ref-microsoftTtest" role="doc-biblioref">n.d.-b</a>)</span>, <span class="citation" data-cites="microsoftTInv2t">Microsoft Support (<a href="#ref-microsoftTInv2t" role="doc-biblioref">n.d.-a</a>)</span>, and <span class="citation" data-cites="microsoftToolpak">Microsoft Support (<a href="#ref-microsoftToolpak" role="doc-biblioref">n.d.-c</a>)</span> explain Excel’s worksheet functions and ToolPak workflow, including their degrees-of-freedom conventions.</li>
+<li><span class="citation" data-cites="zimmerman2004">Zimmerman (<a href="#ref-zimmerman2004" role="doc-biblioref">2004</a>)</span> examines why choosing pooled or Welch after a preliminary variance test can perform poorly.</li>
+</ul>
+</section>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-microsoftTInv2t" class="csl-entry" role="listitem">
+Microsoft Support. n.d.-a. <span>“T.INV.2T Function.”</span> Accessed September 18, 2026. <a href="https://support.microsoft.com/en-us/office/t-inv-2t-function-ce72ea19-ec6c-4be7-bed2-b9baf2264f17">https://support.microsoft.com/en-us/office/t-inv-2t-function-ce72ea19-ec6c-4be7-bed2-b9baf2264f17</a>.
+</div>
+<div id="ref-microsoftTtest" class="csl-entry" role="listitem">
+Microsoft Support. n.d.-b. <span>“T.TEST Function.”</span> Accessed September 18, 2026. <a href="https://support.microsoft.com/en-us/office/t-test-function-d4e08ec3-c545-485f-962e-276f7cbed055">https://support.microsoft.com/en-us/office/t-test-function-d4e08ec3-c545-485f-962e-276f7cbed055</a>.
+</div>
+<div id="ref-microsoftToolpak" class="csl-entry" role="listitem">
+Microsoft Support. n.d.-c. <span>“Use the Analysis ToolPak to Perform Complex Data Analysis.”</span> Accessed September 18, 2026. <a href="https://support.microsoft.com/en-us/office/use-the-analysis-toolpak-to-perform-complex-data-analysis-6c67ccf0-f4a9-487c-8dec-bdb5a2cefab6">https://support.microsoft.com/en-us/office/use-the-analysis-toolpak-to-perform-complex-data-analysis-6c67ccf0-f4a9-487c-8dec-bdb5a2cefab6</a>.
+</div>
+<div id="ref-nistTwoSample" class="csl-entry" role="listitem">
+National Institute of Standards and Technology. n.d. <span>“Two-Sample t-Test for Equal Means.”</span> Accessed September 18, 2026. <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm">https://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm</a>.
+</div>
+<div id="ref-rTtest" class="csl-entry" role="listitem">
+R Core Team. n.d. <span>“T.test: Student’s t-Test.”</span> Accessed September 18, 2026. <a href="https://search.r-project.org/R/refmans/stats/html/t.test.html">https://search.r-project.org/R/refmans/stats/html/t.test.html</a>.
+</div>
+<div id="ref-scipyTtestInd" class="csl-entry" role="listitem">
+SciPy Developers. n.d. <span>“Scipy.stats.ttest_ind.”</span> Accessed September 18, 2026. <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html</a>.
+</div>
+<div id="ref-welch1947" class="csl-entry" role="listitem">
+Welch, B. L. 1947. <span>“The Generalization of <span class="nocase">Student’s</span> Problem When Several Different Population Variances Are Involved.”</span> <em>Biometrika</em> 34 (1/2): 28–35. <a href="https://doi.org/10.1093/biomet/34.1-2.28">https://doi.org/10.1093/biomet/34.1-2.28</a>.
+</div>
+<div id="ref-zimmerman2004" class="csl-entry" role="listitem">
+Zimmerman, Donald W. 2004. <span>“A Note on Preliminary Tests of Equality of Variances.”</span> <em>British Journal of Mathematical and Statistical Psychology</em> 57 (1): 173–81. <a href="https://doi.org/10.1348/000711004849222">https://doi.org/10.1348/000711004849222</a>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../topics/hypothesis-testing/index.html" class="pagination-link" aria-label="Hypothesis testing">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Hypothesis testing</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>SPH5002 Companion</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Course materials for learning and revision</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
