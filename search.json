@@ -4,29 +4,29 @@
     "href": "topics/hypothesis-testing/index.html",
     "title": "Hypothesis testing",
     "section": "",
-    "text": "Hypothesis testing asks whether an observed pattern is compatible with a starting claim about a population, allowing for variation between samples. It helps us judge evidence; it does not turn a sample result into certainty.",
+    "text": "Identify the question. State the population quantity and the starting and competing claims.\nCheck the data. Identify the outcome type, how groups are related, and whether the test suits the study design.\nCalculate. Start from the supplied sample sizes, means and standard deviations, then calculate the test statistic.\nCompare with a cutoff. Use the appropriate critical value. In the Welch exercise, round degrees of freedom to the nearest integer for the class t table.\nInterpret. State the decision and explain what it means for the original question.",
     "crumbs": [
       "Topics",
       "Hypothesis testing"
     ]
   },
   {
-    "objectID": "topics/hypothesis-testing/index.html#testing-roadmap",
-    "href": "topics/hypothesis-testing/index.html#testing-roadmap",
+    "objectID": "topics/hypothesis-testing/index.html#step-in-applying-hypothesis-testing",
+    "href": "topics/hypothesis-testing/index.html#step-in-applying-hypothesis-testing",
     "title": "Hypothesis testing",
-    "section": "Testing roadmap",
-    "text": "Testing roadmap\n\nIdentify the question. State the population quantity and the starting and competing claims.\nCheck the data. Identify the outcome type, how groups are related, and whether the test suits the study design.\nCalculate. Start from the supplied sample sizes, means and standard deviations, then calculate the test statistic.\nCompare with a cutoff. Use the appropriate critical value. In the Welch exercise, round degrees of freedom to the nearest integer for the class t table.\nInterpret. State the decision and explain what it means for the original question.",
+    "section": "",
+    "text": "Identify the question. State the population quantity and the starting and competing claims.\nCheck the data. Identify the outcome type, how groups are related, and whether the test suits the study design.\nCalculate. Start from the supplied sample sizes, means and standard deviations, then calculate the test statistic.\nCompare with a cutoff. Use the appropriate critical value. In the Welch exercise, round degrees of freedom to the nearest integer for the class t table.\nInterpret. State the decision and explain what it means for the original question.",
     "crumbs": [
       "Topics",
       "Hypothesis testing"
     ]
   },
   {
-    "objectID": "topics/hypothesis-testing/index.html#lessons",
-    "href": "topics/hypothesis-testing/index.html#lessons",
+    "objectID": "topics/hypothesis-testing/index.html#test-lists",
+    "href": "topics/hypothesis-testing/index.html#test-lists",
     "title": "Hypothesis testing",
-    "section": "Lessons",
-    "text": "Lessons\n\n\n\n\n\n\nTitle\n\n\n\nDescription\n\n\n\nSuitable data\n\n\n\n\n\n\n\n\nIndependent two-sample t-test\n\n\nCompare two independent population means with Welch’s t-test, a critical value, and reproducible software checks.\n\n\nNumerical measurements from two separate groups; supplied sample size, mean and SD for each group.\n\n\n\n\n\n\nNo matching items",
+    "section": "Test lists",
+    "text": "Test lists\n\n\n\n\n\n\nTitle\n\n\n\nDescription\n\n\n\nSuitable data\n\n\n\n\n\n\n\n\nIndependent two-sample t-test\n\n\nCompare two independent population means with Welch’s t-test, a critical value, and reproducible software checks.\n\n\nNumerical measurements from two separate groups; supplied sample size, mean and SD for each group.\n\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "Topics",
       "Hypothesis testing"
@@ -37,7 +37,7 @@
     "href": "topics/hypothesis-testing/index.html#required-and-optional-material",
     "title": "Hypothesis testing",
     "section": "Required and optional material",
-    "text": "Required and optional material\nRead Overview and Application for the course requirements. You should already understand means and standard deviations. The worked hand and spreadsheet exercises use critical values and do not require p-values.\n\n\n\n\n\n\nNote\n\n\n\nOptional — not covered or required for this course. The theory and statistical application sections offer derivations, diagnostics and software practice for readers who want to go further. You can complete the required lesson without them.",
+    "text": "Required and optional material\nEach testing contain two type of content: 1. Overview and Application: This provide high-level understanding of hypothesis testing suitable for typical public health professional. 2. Theory and Statistical application example: This is optional content for advance learner interested in deep understanding of each test and how to perform them in common statistical application.",
     "crumbs": [
       "Topics",
       "Hypothesis testing"
@@ -68,28 +68,28 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "SPH5002 Companion",
+    "title": "Biostatistic method for public health professional",
     "section": "",
-    "text": "This site supports SPH5002 learning and revision. It helps you recognise when a statistical test is appropriate, apply it to a summary of the data, and report the result clearly. The teaching core assumes that you already know how to read means and standard deviations. Examples therefore begin with summary statistics rather than raw-data calculations. Degrees of freedom used in class are rounded to the nearest whole number. The pilot lesson uses a critical-value decision rule; a p-value is not required.\nUse each topic overview to choose a lesson. Each lesson separates course requirements from optional extensions.\n\n\n\n\n\n\nImportantRequired course content\n\n\n\nRequired sections contain the concepts, decisions, and reporting skills you are expected to know for this course.\n\n\n\n\n\n\n\n\nNoteOptional extension\n\n\n\nOptional sections add theory or software detail for readers who want to go further. They are clearly marked and are not required for this course."
+    "text": "This site supports biostatistic learning and revision. Primary audience of this resource is public health professional with no or minimal quantitative background. It helps you recognise which statistical methods are appropriate, how to apply it to the data, and how to interpret and report the result. Examples calculations begin with summary statistics rather than raw-data. Degrees of freedom used are rounded to the nearest whole number. The hypothesis testing uses a critical-value decision rule; a p-value calculations is not presented in this version.\nUse each topic overview to choose a lesson. Each lesson separates high-level overview from optional theorical and statistical contents.\n\n\n\n\n\n\nImportantRequired course content\n\n\n\nRequired sections contain the concepts, decisions, and reporting skills you are expected to know for this course.\n\n\n\n\n\n\n\n\nNoteOptional extension\n\n\n\nOptional sections add theory or software detail for readers who want to go further. They are clearly marked and are not required for this course."
   },
   {
-    "objectID": "index.html#what-this-companion-is-for",
-    "href": "index.html#what-this-companion-is-for",
-    "title": "SPH5002 Companion",
+    "objectID": "index.html#what-this-resource-is-for",
+    "href": "index.html#what-this-resource-is-for",
+    "title": "Biostatistic method for public health professional",
     "section": "",
-    "text": "This site supports SPH5002 learning and revision. It helps you recognise when a statistical test is appropriate, apply it to a summary of the data, and report the result clearly. The teaching core assumes that you already know how to read means and standard deviations. Examples therefore begin with summary statistics rather than raw-data calculations. Degrees of freedom used in class are rounded to the nearest whole number. The pilot lesson uses a critical-value decision rule; a p-value is not required.\nUse each topic overview to choose a lesson. Each lesson separates course requirements from optional extensions.\n\n\n\n\n\n\nImportantRequired course content\n\n\n\nRequired sections contain the concepts, decisions, and reporting skills you are expected to know for this course.\n\n\n\n\n\n\n\n\nNoteOptional extension\n\n\n\nOptional sections add theory or software detail for readers who want to go further. They are clearly marked and are not required for this course."
+    "text": "This site supports biostatistic learning and revision. Primary audience of this resource is public health professional with no or minimal quantitative background. It helps you recognise which statistical methods are appropriate, how to apply it to the data, and how to interpret and report the result. Examples calculations begin with summary statistics rather than raw-data. Degrees of freedom used are rounded to the nearest whole number. The hypothesis testing uses a critical-value decision rule; a p-value calculations is not presented in this version.\nUse each topic overview to choose a lesson. Each lesson separates high-level overview from optional theorical and statistical contents.\n\n\n\n\n\n\nImportantRequired course content\n\n\n\nRequired sections contain the concepts, decisions, and reporting skills you are expected to know for this course.\n\n\n\n\n\n\n\n\nNoteOptional extension\n\n\n\nOptional sections add theory or software detail for readers who want to go further. They are clearly marked and are not required for this course."
   },
   {
     "objectID": "index.html#topics",
     "href": "index.html#topics",
-    "title": "SPH5002 Companion",
+    "title": "Biostatistic method for public health professional",
     "section": "Topics",
-    "text": "Topics\n\n\n\n\n\n\nTitle\n\n\n\nDescription\n\n\n\n\n\n\n\n\nHypothesis testing\n\n\nChoose, apply, and report tests that compare population quantities using sample summaries.\n\n\n\n\n\n\nNo matching items"
+    "text": "Topics\n\n\n\n\n\n\nTitle\n\n\n\nDescription\n\n\n\n\n\n\n\n\nHypothesis testing\n\n\nHypothesis testing asks whether an observed pattern is compatible with a starting claim about a population, allowing for variation between samples. It helps us judge evidence; it does not turn a sample result into certainty.\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#introductory-reading",
     "href": "index.html#introductory-reading",
-    "title": "SPH5002 Companion",
+    "title": "Biostatistic method for public health professional",
     "section": "Introductory reading",
     "text": "Introductory reading\nThe NIST/SEMATECH e-Handbook of Statistical Methods offers a concise introduction to comparing two means (National Institute of Standards and Technology, n.d.). Its two-sample t-test page is useful for seeing how a research question, hypotheses, test statistic, and conclusion fit together. The course lesson builds on that overview and states the conventions used here."
   },
