@@ -1,6 +1,6 @@
-# SPH5002 Companion
+# Biostatistical method for Public Health
 
-This Quarto website is a concise companion to the statistical methods taught in SPH5002. It is organised by topic, with course requirements separated from optional theory and software extensions.
+This Quarto website is a concise resource for the statistical methods. It is developed as a companion for course in public health research method for master of public health program. The primary audience of this resource is public health professional with little to no quantitative background. It is organised by topic, with high-level understanding of concept separated from optional theory and software extensions.
 
 ## Environment
 

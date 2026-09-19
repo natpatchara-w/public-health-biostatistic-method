@@ -11,9 +11,13 @@ engine: knitr
 source("scripts/lesson-data.R")
 ```
 
-You should already be familiar with sample means and sample standard deviations. If you want to go straight to the worked exercise, use [Application](#application-required); the derivations are in [Theory](#theory-optional), and software extensions are in [Statistical applications](#statistical-applications-optional). You can also download the [practice data (CSV)](data/independent-t-test.csv) and [Excel workbook](downloads/independent-t-test.xlsx) now.
+You should already be familiar with sample means and sample standard deviations. 
+If you want to go straight to the worked exercise, use [Application](#application-required); 
+the derivations are in [Theory](#theory-optional), and software extensions are in [Statistical applications](#statistical-applications-optional).
+You can also download the [practice data (CSV)](data/independent-t-test.csv) and [Excel workbook](downloads/independent-t-test.xlsx) now.
 
-**Learning objectives:** identify independent samples, calculate Welch's statistic from supplied summaries, use the nearest-integer degrees-of-freedom rule, and interpret a critical-value decision. The required reading route is **Overview → Application**.
+**Learning objectives:** 
+identify independent samples, calculate Welch's statistic from supplied summaries, use the nearest-integer degrees-of-freedom rule, and interpret a critical-value decision. The required reading route is **Overview → Application**.
 
 ## 1. Overview
 

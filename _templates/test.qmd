@@ -14,7 +14,7 @@ Briefly state the research question, outcome type, study groups or measurements,
 ## Application — required
 
 ::: {.callout-important .required-content title="Required course content"}
-Explain the hypotheses, assumptions, calculation or interpretation steps, and reporting language required for SPH5002. Work from supplied summary statistics and use a critical-value decision. For Welch's test, round degrees of freedom to the nearest whole number, with positive halves rounded up. Do not require a p-value calculation.
+Explain the hypotheses, assumptions, calculation or interpretation steps, and reporting language. Work from supplied summary statistics and use a critical-value decision. For Welch's test, round degrees of freedom to the nearest whole number, with positive halves rounded up. Do not require a p-value calculation.
 :::
 
 Include a worked hand example, a matching step-by-step spreadsheet table with cell references and formulas, common mistakes, and self-check questions with expandable answers. End with a concise interpretation in the context of the research question.

@@ -1,6 +1,6 @@
 ---
-title: "SPH5002 Companion"
-description: "Course-focused guidance for choosing, applying, and reporting statistical tests."
+title: "Biostatistic method for public health professional"
+description: "Focus biostatistic guidance for choosing, applying, and reporting statistical methods."
 listing:
   id: topics-listing
   contents: topics/*/index.qmd
@@ -13,11 +13,11 @@ listing:
 page-layout: full
 ---
 
-## What this companion is for
+## What this resource is for
 
-This site supports SPH5002 learning and revision. It helps you recognise when a statistical test is appropriate, apply it to a summary of the data, and report the result clearly. The teaching core assumes that you already know how to read means and standard deviations. Examples therefore begin with summary statistics rather than raw-data calculations. Degrees of freedom used in class are rounded to the nearest whole number. The pilot lesson uses a critical-value decision rule; a p-value is not required.
+This site supports biostatistic learning and revision. Primary audience of this resource is public health professional with no or minimal quantitative background. It helps you recognise which statistical methods are appropriate, how to apply it to the data, and how to interpret and report the result. Examples calculations begin with summary statistics rather than raw-data. Degrees of freedom used are rounded to the nearest whole number. The hypothesis testing uses a critical-value decision rule; a p-value calculations is not presented in this version.
 
-Use each topic overview to choose a lesson. Each lesson separates course requirements from optional extensions.
+Use each topic overview to choose a lesson. Each lesson separates high-level overview from optional theorical and statistical contents.
 
 ::: {.callout-important .required-content title="Required course content"}
 Required sections contain the concepts, decisions, and reporting skills you are expected to know for this course.

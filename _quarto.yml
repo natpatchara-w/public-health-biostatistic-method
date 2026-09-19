@@ -18,8 +18,8 @@ project:
     - "!topics/**/__pycache__/**"
 
 website:
-  title: "SPH5002 Companion"
-  description: "A concise companion to the statistical methods used in SPH5002."
+  title: "Biostatistical method for Public Healthn"
+  description: "A concise companion to the statistical methods used in common public health practice."
   page-navigation: true
   search: true
   sidebar:
@@ -27,7 +27,7 @@ website:
     collapse-level: 2
     contents: topics
   page-footer:
-    left: "SPH5002 Companion"
+    left: "Biostatistical method for Public Health"
     right: "Course materials for learning and revision"
 
 bibliography: references.bib
