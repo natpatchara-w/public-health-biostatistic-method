@@ -1,0 +1,50 @@
+---
+title: "Hypothesis testing"
+description: "Choose, apply, and report tests that compare population quantities using sample summaries."
+order: 1
+listing:
+  id: lessons-listing
+  contents:
+    - "*.qmd"
+    - "!index.qmd"
+  type: table
+  sort: "order"
+  fields: [title, description, data-type]
+  field-display-names:
+    data-type: Suitable data
+  field-links: [title]
+  filter-ui: false
+  sort-ui: false
+---
+
+Hypothesis testing asks whether an observed pattern is compatible with a starting claim about a population, allowing for variation between samples. It helps us judge evidence; it does not turn a sample result into certainty.
+
+## Testing roadmap
+
+1. **Identify the question.** State the population quantity and the starting and competing claims.
+2. **Check the data.** Identify the outcome type, how groups are related, and whether the test suits the study design.
+3. **Calculate.** Start from the supplied sample sizes, means and standard deviations, then calculate the test statistic.
+4. **Compare with a cutoff.** Use the appropriate critical value. In the Welch exercise, round degrees of freedom to the nearest integer for the class t table.
+5. **Interpret.** State the decision and explain what it means for the original question.
+
+## Lessons
+
+::: {#lessons-listing}
+:::
+
+## Required and optional material
+
+Read **Overview** and **Application** for the course requirements. You should already understand means and standard deviations. The worked hand and spreadsheet exercises use critical values and do not require p-values.
+
+::: {.callout-note .optional-content}
+**Optional — not covered or required for this course.** The theory and statistical application sections offer derivations, diagnostics and software practice for readers who want to go further. You can complete the required lesson without them.
+:::
+
+## Introductory reading
+
+The NIST guide to comparing two means [@nistTwoSample] connects the research question, hypotheses and test statistic. Use it as a reference alongside the lesson; follow the lesson's stated classroom convention for degrees of freedom.
+
+## References
+
+::: {#refs}
+:::

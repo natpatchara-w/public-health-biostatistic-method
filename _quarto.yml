@@ -1,0 +1,52 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+  pre-render: Rscript scripts/validate-statistics.R
+  render:
+    - index.qmd
+    - topics/**/*.qmd
+    - "!topics/**/_*/**"
+  resources:
+    - .nojekyll
+    - topics/**/data/**
+    - topics/**/downloads/**
+    - topics/**/resources/**
+    - topics/**/_examples/**
+    - "!topics/**/downloads/~$*"
+    - "!topics/**/downloads/*.inspect.ndjson"
+    - "!topics/**/__pycache__/**"
+
+website:
+  title: "SPH5002 Companion"
+  description: "A concise companion to the statistical methods used in SPH5002."
+  page-navigation: true
+  search: true
+  sidebar:
+    style: docked
+    collapse-level: 2
+    contents: topics
+  page-footer:
+    left: "SPH5002 Companion"
+    right: "Course materials for learning and revision"
+
+bibliography: references.bib
+reference-location: document
+
+execute:
+  freeze: auto
+  cache: false
+  echo: false
+  warning: false
+
+format:
+  html:
+    theme:
+      - cosmo
+      - assets/styles.scss
+    toc: true
+    toc-depth: 3
+    anchor-sections: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    code-copy: true

@@ -1,0 +1,600 @@
+---
+title: "Independent two-sample t-test"
+description: "Compare two independent population means with Welch's t-test, a critical value, and reproducible software checks."
+data-type: "Numerical measurements from two separate groups; supplied sample size, mean and SD for each group."
+order: 1
+engine: knitr
+---
+
+```{r}
+#| include: false
+source("scripts/lesson-data.R")
+```
+
+You should already be familiar with sample means and sample standard deviations. If you want to go straight to the worked exercise, use [Application](#application-required); the derivations are in [Theory](#theory-optional), and software extensions are in [Statistical applications](#statistical-applications-optional). You can also download the [practice data (CSV)](data/independent-t-test.csv) and [Excel workbook](downloads/independent-t-test.xlsx) now.
+
+**Learning objectives:** identify independent samples, calculate Welch's statistic from supplied summaries, use the nearest-integer degrees-of-freedom rule, and interpret a critical-value decision. The required reading route is **Overview → Application**.
+
+## 1. Overview
+
+::: {.callout-important}
+The systolic blood pressure values in this lesson are synthetic and fictional. They were constructed for teaching and do not describe real patients or a real study.
+:::
+
+This lesson starts with **supplied summary statistics**. You do not need the individual observations for the required calculation.
+
+| Quantity | Group A | Group B |
+|---|---:|---:|
+| Sample size | `r n1` | `r n2` |
+| Sample mean (mmHg) | `r f(m1, 0)` | `r f(m2, 0)` |
+| Sample standard deviation (mmHg) | $\sqrt{24}$ = `r f(s1)` | $\sqrt{96}$ = `r f(s2)` |
+
+We ask whether the two population means differ. Define every subtraction as **Group A minus Group B**, and choose a two-sided significance level of $\alpha=`r f(alpha, 2)`$ before making the decision.
+
+### Suitability checks
+
+Use an independent two-sample t-test when the outcome is quantitative, there are two distinct groups, and each person or unit contributes one observation to one group. If the same people are measured twice, or observations are explicitly matched, use a paired analysis instead.
+
+With samples this small, the method also relies on each population being roughly bell-shaped without extreme values that dominate its group. Plots can identify concerns, but they do not provide a pass/fail certificate; optional diagnostics appear in [Theory](#theory-optional).
+
+We use **Welch's two-sample t-test** as the default. It permits the two population variances to differ and remains appropriate when the sample sizes differ [@welch1947; @nistTwoSample]. It does not solve dependence, clustering, poor sampling, influential data errors, or a weak study design.
+
+The starting claim is that the two population means have no difference. The competing claim is that they differ. In symbols,
+
+$$
+H_0:\mu_A-\mu_B=0
+\qquad\text{versus}\qquad
+H_1:\mu_A-\mu_B\ne0.
+$$
+
+Here $H_0$ is the **null hypothesis** (the starting claim) and $H_1$ is the **alternative hypothesis** (the competing claim). The symbols $\mu_A$ and $\mu_B$ denote the population averages, which we estimate using the sample means. The **standard error (SE)** describes the typical sample-to-sample variation in the difference of means. The **t statistic** expresses the observed difference in SE units after accounting for the starting value of zero. The **degrees-of-freedom (df) calculation** chooses the row of the t table. A **critical value** is the cutoff beyond which we reject the starting claim.
+
+Setting $\alpha=.05$ aims, in repeated studies where the starting claim and model are true, to falsely declare a difference about 5 times in 100. The core recipe is: subtract the means, build the SE from the two group contributions, express the null-adjusted difference in SE units, calculate Welch df, and compare $|t|$ with the two-sided cutoff. No p-value is required for this decision.
+
+## 2. Application (required)
+
+### Hand calculation: ten steps
+
+The test uses only the supplied $n$, mean, and standard deviation for each group. Keep full precision through the calculation and round only reported results.
+
+1. **Fix the direction and decision rule.** Work with $A-B$, use a two-sided test, and set $\alpha=`r f(alpha, 2)`$. We will reject $H_0$ when $|t|$ exceeds the two-sided critical value.
+
+2. **Record the sample sizes.** $n_A=`r n1`$ and $n_B=`r n2`$.
+
+3. **Record the means and standard deviations.** $\bar x_A=`r f(m1, 0)`$, $\bar x_B=`r f(m2, 0)`$, $s_A=\sqrt{24}=`r f(s1)`$, and $s_B=\sqrt{96}=`r f(s2)`$ mmHg.
+
+4. **Calculate the observed mean difference.**
+
+   $$
+   \bar x_A-\bar x_B=`r f(m1, 0)`-`r f(m2, 0)`=`r f(difference, 0)`\ \text{mmHg}.
+   $$
+
+5. **Calculate each group's contribution to the squared standard error.**
+
+   $$
+   \frac{s_A^2}{n_A}=\frac{24}{8}=`r f(v1, 0)`,
+   \qquad
+   \frac{s_B^2}{n_B}=\frac{96}{8}=`r f(v2, 0)`.
+   $$
+
+6. **Combine the contributions to obtain the standard error.**
+
+   $$
+   SE=\sqrt{\frac{s_A^2}{n_A}+\frac{s_B^2}{n_B}}
+   =\sqrt{`r f(v1, 0)`+`r f(v2, 0)`}
+   =\sqrt{15}
+   =`r f(se)`\ \text{mmHg}.
+   $$
+
+7. **Form the Welch t statistic under the null difference of zero.**
+
+   $$
+   t=\frac{(\bar x_A-\bar x_B)-0}{SE}
+   =\frac{`r f(difference, 0)`}{`r f(se, 6)`}
+   =`r f(t_stat)`.
+   $$
+
+8. **Calculate the Welch--Satterthwaite degrees of freedom.**
+
+   The two terms in the denominator are
+
+   $$
+   \frac{(`r f(v1, 0)`)^2}{`r n1`-1}=\frac{9}{7}=`r f(w1, 6)`,
+   \qquad
+   \frac{(`r f(v2, 0)`)^2}{`r n2`-1}=\frac{144}{7}=`r f(w2, 6)`.
+   $$
+
+   $$
+   \nu=
+   \frac{\left(s_A^2/n_A+s_B^2/n_B\right)^2}
+   {\dfrac{(s_A^2/n_A)^2}{n_A-1}+\dfrac{(s_B^2/n_B)^2}{n_B-1}}
+   =\frac{15^2}{9/7+144/7}
+   =`r f(df, 6)`.
+   $$
+
+9. **Apply the course table convention.** Round the positive Welch degrees of freedom to the nearest integer, with an exact half rounded up:
+
+   $$
+   \nu_{\text{class}}=`r f(df, 6)`\longrightarrow `r df_class`.
+   $$
+
+   For a two-sided test with $\alpha=`r f(alpha, 2)`$, the critical value is
+
+   $$
+   t^*=t_{1-\alpha/2,\,`r df_class`}=t_{0.975,\,`r df_class`}
+   =`r f(critical)`.
+   $$
+
+   The relevant excerpt from a two-sided t table is shown below. The selected cell is the row for df = `r df_class` and the column for $\alpha=`r f(alpha, 2)`$.
+
+   | df | $\alpha=.10$ | $\alpha=.05$ | $\alpha=.01$ |
+   |---:|---:|---:|---:|
+   | 8 | `r f(qt(1 - .10 / 2, 8))` | `r f(qt(1 - .05 / 2, 8))` | `r f(qt(1 - .01 / 2, 8))` |
+   | 9 | `r f(qt(1 - .10 / 2, 9))` | `r f(qt(1 - .05 / 2, 9))` | `r f(qt(1 - .01 / 2, 9))` |
+   | **10** | `r f(qt(1 - .10 / 2, 10))` | **`r f(qt(1 - .05 / 2, 10))`** | `r f(qt(1 - .01 / 2, 10))` |
+   | 11 | `r f(qt(1 - .10 / 2, 11))` | `r f(qt(1 - .05 / 2, 11))` | `r f(qt(1 - .01 / 2, 11))` |
+   | 12 | `r f(qt(1 - .10 / 2, 12))` | `r f(qt(1 - .05 / 2, 12))` | `r f(qt(1 - .01 / 2, 12))` |
+
+10. **Compare and interpret.** $|t|=`r f(abs(t_stat))`$ is greater than $t^*=`r f(critical)`$, so **reject $H_0$** at the 5% significance level. Group A's sample mean is `r f(abs(difference), 0)` mmHg lower than Group B's. Under the model assumptions, the data provide evidence that the population means differ. This result supports an association; it establishes a causal effect only when the study design justifies causal inference.
+
+This required decision uses a critical value. A p-value is not needed.
+
+### Spreadsheet practice
+
+Download the [practice data (CSV)](data/independent-t-test.csv) and the [two-sheet Excel workbook](downloads/independent-t-test.xlsx). The workbook sheets are named **Practice** and **Worked solution**. All summary statistics needed for the calculation are supplied; the required spreadsheet exercise does not calculate them from raw observations.
+
+Follow these numbered phases so that the spreadsheet mirrors the hand calculation:
+
+1. **Enter the supplied inputs.** Use rows 5--10. Row 5 contains the group headers; rows 6--8 contain $n$, mean, and SD; row 9 contains $\alpha$; row 10 contains the hypothesized difference.
+2. **Build the Welch statistic.** Use rows 13--20 to calculate the observed difference, the two group contributions, the standard error, the t statistic, and the fractional Welch degrees of freedom.
+3. **Apply the class decision rule.** Use rows 21--24 to round the degrees of freedom explicitly, obtain the two-sided critical value, compare $|t|$ with it, and state the decision.
+
+The input block must have this layout:
+
+| Row | Column A: label | Column B: Group A | Column C: Group B | Column D: notes |
+|---:|---|---:|---:|---|
+| 5 | Supplied information | Group A | Group B | Meaning |
+| 6 | n | `r n1` | `r n2` | Supplied |
+| 7 | Mean | `r f(m1, 0)` | `r f(m2, 0)` | Supplied (mmHg) |
+| 8 | SD | `r f(s1, 6)` | `r f(s2, 6)` | Supplied (mmHg) |
+| 9 | Alpha | 0.05 |  | Two-sided |
+| 10 | Hypothesized difference | 0 |  | Group A minus Group B |
+
+The SDs are displayed to six decimal places, while the workbook retains their full stored values ($\sqrt{24}$ and $\sqrt{96}$) for calculation.
+
+Enter each formula separately. Do not combine steps into one long formula.
+
+| Cell | Column A: label | Formula to enter | Expected result | Explanation |
+|---|---|---|---:|---|
+| B13 | Difference (A − B) | `=B7-C7` | `r f(difference, 0)` | Subtract the means in the chosen order. |
+| B14 | Group A contribution | `=B8^2/B6` | `r f(v1, 0)` | Square A's supplied SD and divide by its sample size. |
+| B15 | Group B contribution | `=C8^2/C6` | `r f(v2, 0)` | Repeat for Group B. |
+| B16 | Standard error | `=SQRT(B14+B15)` | `r f(se)` | Take the square root of the sum. |
+| B17 | t statistic | `=(B13-B10)/B16` | `r f(t_stat)` | Express the difference from the null in SE units. |
+| B18 | df denominator term A | `=B14^2/(B6-1)` | `r f(w1, 6)` | Calculate A's term in the df denominator. |
+| B19 | df denominator term B | `=B15^2/(C6-1)` | `r f(w2, 6)` | Calculate B's term in the df denominator. |
+| B20 | Welch df | `=(B14+B15)^2/(B18+B19)` | `r f(df, 6)` | Divide the squared sum by the two denominator terms. |
+| B21 | Class df | `=ROUND(B20,0)` | `r df_class` | Select the nearest whole-number table row. |
+| B22 | Two-sided critical value | `=T.INV.2T(B9,B21)` | `r f(critical)` | Use alpha and the explicitly rounded df. |
+| B23 | Absolute t | `=ABS(B17)` | `r f(abs(t_stat))` | Count departures in either direction. |
+| B24 | Decision | `=IF(B23>B22,"Reject H0","Do not reject H0")` | Reject H0 | Compare the absolute statistic with the cutoff. |
+
+`ROUND(B20,0)` makes the course convention visible: for a positive value, Excel rounds an exact half up. Supplying the integer in B21 to `T.INV.2T` also avoids relying on the function's implicit truncation of a non-integer degrees-of-freedom argument [@microsoftTInv2t].
+
+::: {.callout-warning title="Keep precision in the cells"}
+Format cells to show a convenient number of decimal places, but do not replace formulas with rounded values. Premature rounding can change a statistic near a critical boundary.
+:::
+
+### Self-checks
+
+If the subtraction were changed to Group B minus Group A, what would change?
+
+::: {.callout-tip collapse="true" title="Show answer 1"}
+The estimated difference and $t$ statistic would become positive, but $|t|$, the critical value, and the two-sided decision would remain unchanged.
+:::
+
+Why do we compare $|t|$ with a positive critical value?
+
+::: {.callout-tip collapse="true" title="Show answer 2"}
+The two-sided alternative includes departures in both directions. Taking $|t|$ measures how far the statistic lies from zero, regardless of sign.
+:::
+
+Suppose $|t|$ had been 2.10 with the same critical value. What would the course decision be?
+
+::: {.callout-tip collapse="true" title="Show answer 3"}
+Because $2.10<`r f(critical)`$, we would not reject $H_0$ at the 5% level. That would not prove the means equal.
+:::
+
+### Common mistakes
+
+- Treating repeated measurements or matched observations as independent samples.
+- Reversing the subtraction partway through the calculation; write **A − B** beside every difference.
+- Choosing the pooled test after a preliminary variance test. Welch is the default here and does not require evidence that variances differ.
+- Letting `T.INV.2T` silently truncate a fractional df instead of applying the course's explicit nearest-integer rule.
+- Rounding SDs, SE, t, or df inside the calculation rather than only changing their display.
+- Comparing a signed t statistic with a positive two-sided cutoff instead of comparing $|t|$.
+- Claiming that rejection proves a causal effect when the design does not support causality.
+
+## 3. Theory (optional)
+
+::: {.callout-note .optional-content}
+Optional — not covered or required for this course.
+:::
+
+### Assumptions and diagnostic questions
+
+Treat assumptions as questions about how the data arose. A normality test or variance test is not a pass/fail gate for choosing a method.
+
+| Issue | Question to ask | What a diagnostic can and cannot tell you | Sensible response |
+|---|---|---|---|
+| Independence | Were units sampled independently, assigned independently, and measured once? Is there clustering by household, class, clinic, or site? | A plot or normality test cannot verify independence. This comes from the design and data-collection process. | Use a paired, clustered, or multilevel method when the design creates dependence. |
+| Outcome distribution | Within each population, are severe skew, heavy tails, or unusual values plausible? | Dot plots and Q--Q plots can reveal data errors and influential observations. With only eight observations per group, they cannot prove normality or reliably rule out important departures. | Verify unusual values, report robust summaries, and consider a sensitivity analysis when conclusions depend on a few observations. |
+| Variances | Could population variances differ? | A preliminary equality-of-variance test is noisy and creates an unreliable two-stage procedure [@zimmerman2004]. | Use Welch by default; it already allows unequal variances. |
+| Sampling and assignment | From what population were units sampled, and how were groups formed? | The t-test cannot repair selection bias, confounding, or non-random treatment assignment. | Match the interpretation to the design: sampling supports generalization; random assignment supports causal claims. |
+
+::: {.callout-note .optional-content collapse="true" title="Optional distribution diagnostics in base R"}
+Q--Q plots compare each ordered sample with the pattern expected from a normal distribution. Large systematic curves or isolated points deserve investigation; close alignment is reassuring but cannot prove population normality.
+
+```{r}
+#| echo: true
+#| fig-alt: "Normal Q-Q plots for Group A and Group B. The eight points in each group lie close to their reference line."
+#| fig-cap: "Q--Q plots can flag strong departures, but eight observations provide limited diagnostic resolution."
+#| fig-width: 8
+#| fig-height: 3.5
+par(mfrow = c(1, 2))
+qqnorm(a, main = "Group A", pch = 19, col = "#2C7FB8")
+qqline(a, col = "#233444", lwd = 2)
+qqnorm(b, main = "Group B", pch = 19, col = "#D95F0E")
+qqline(b, col = "#233444", lwd = 2)
+```
+
+Shapiro--Wilk tests provide a formal check for departures from normality:
+
+```{r}
+#| echo: true
+shapiro.test(a)
+shapiro.test(b)
+```
+
+With only `r n1` observations per group, these tests have low power: a large p-value means that this small sample did not reveal a clear departure, not that the population has been proved normal. A small p-value also needs follow-up with the plot and data context rather than automatic rejection of the method.
+
+The sample variances are $s_A^2=`r f(s1^2, 0)`$ and $s_B^2=`r f(s2^2, 0)`$. We describe that difference and use Welch throughout. An F test such as `var.test(a, b)` would itself rely strongly on normal populations, and using it as a gate to switch between pooled and Welch tests adds avoidable error. Welch does not require the variances to be equal or to be proved unequal.
+:::
+
+### Why Welch's standard error has this form
+
+For independent samples,
+
+$$
+E(\bar X_A-\bar X_B)=\mu_A-\mu_B
+$$
+
+and independence makes the covariance term zero, so
+
+$$
+\operatorname{Var}(\bar X_A-\bar X_B)
+=\operatorname{Var}(\bar X_A)+\operatorname{Var}(\bar X_B)
+=\frac{\sigma_A^2}{n_A}+\frac{\sigma_B^2}{n_B}.
+$$
+
+The population variances are unknown. Substituting the independent sample-variance estimates gives
+
+$$
+\widehat{\operatorname{SE}}(\bar X_A-\bar X_B)
+=\sqrt{\frac{s_A^2}{n_A}+\frac{s_B^2}{n_B}}.
+$$
+
+The denominator is random. The Welch--Satterthwaite approximation can be obtained by matching its first two moments. Let
+
+$$
+Q=\frac{S_A^2}{n_A}+\frac{S_B^2}{n_B}.
+$$
+
+For independent normal samples, $E(S_i^2)=\sigma_i^2$ and $\operatorname{Var}(S_i^2)=2\sigma_i^4/(n_i-1)$. Therefore
+
+$$
+E(Q)=V=\frac{\sigma_A^2}{n_A}+\frac{\sigma_B^2}{n_B}
+$$
+
+and
+
+$$
+\operatorname{Var}(Q)=2\left[
+\frac{\sigma_A^4}{n_A^2(n_A-1)}+
+\frac{\sigma_B^4}{n_B^2(n_B-1)}
+\right].
+$$
+
+Approximate $Q$ by a scaled chi-square variable $c\chi_\nu^2$. Matching the mean and variance gives $c\nu=V$ and $2c^2\nu=\operatorname{Var}(Q)$. Eliminating $c$ gives
+
+$$
+\nu=\frac{2V^2}{\operatorname{Var}(Q)}.
+$$
+
+Replacing the unknown population variance components with their sample estimates produces
+
+$$
+\nu=
+\frac{\left(s_A^2/n_A+s_B^2/n_B\right)^2}
+{\dfrac{(s_A^2/n_A)^2}{n_A-1}+\dfrac{(s_B^2/n_B)^2}{n_B-1}}.
+$$
+
+This moment matching is why $\nu$ can be fractional: it is an effective shape parameter for the reference distribution, not a literal count of observations. Software normally retains its fractional value.
+
+### Why the pooled test is exact under stronger assumptions
+
+If both samples are normal and share one population variance $\sigma^2$, define
+
+$$
+s_p^2=
+\frac{(n_A-1)s_A^2+(n_B-1)s_B^2}
+{n_A+n_B-2}.
+$$
+
+Under $H_0$, the standardized mean difference based on the true variance,
+
+$$
+Z=\frac{\bar X_A-\bar X_B}
+{\sigma\sqrt{1/n_A+1/n_B}},
+$$
+
+has a standard normal distribution. The pooled within-group sum of squares satisfies
+
+$$
+U=\frac{(n_A+n_B-2)s_p^2}{\sigma^2}
+\sim\chi^2_{n_A+n_B-2},
+$$
+
+and, for normal samples, $Z$ and $U$ are independent. This normal/chi-square independence is a consequence of Cochran's theorem; we use it here without proving the theorem. Therefore
+
+$$
+\frac{Z}{\sqrt{U/(n_A+n_B-2)}}
+=\frac{\bar X_A-\bar X_B}
+{s_p\sqrt{1/n_A+1/n_B}}
+\sim t_{n_A+n_B-2}.
+$$
+
+That exact result requires normality and a common population variance. Welch's fractional-degree-of-freedom reference distribution is approximate when population variances differ. With non-normal populations, both methods increasingly rely on large-sample behavior.
+
+In this example $n_A=n_B$. That equality makes the Welch and pooled standard errors, and therefore their t statistics, identical even though the sample variances differ. Their degrees of freedom are different: Welch gives `r f(df, 6)`, while the pooled test gives $`r n1`+`r n2`-2=`r n1 + n2 - 2`$. This convenient coincidence does not hold in general when sample sizes differ.
+
+### Confidence interval
+
+Using the fractional Welch degrees of freedom, a 95% confidence interval for $\mu_A-\mu_B$ is
+
+$$
+(\bar x_A-\bar x_B)\ \pm\ t_{0.975,\nu}\,SE
+=`r f(difference, 0)`\ \pm\ `r f(critical_full)`(`r f(se)`)
+=\bigl(`r f(ci[1])`,\ `r f(ci[2])`\bigr)\ \text{mmHg}.
+$$
+
+The interval estimates the range of population mean differences compatible with the model and data. It excludes zero and is entirely negative, agreeing with the two-sided test while also showing the plausible direction and magnitude.
+
+### One-sided alternatives
+
+A one-sided question must be chosen before inspecting the results. For $H_1:\mu_A-\mu_B<0$, the 5% critical boundary using the class degrees of freedom is $-t_{0.95,`r df_class`}=-`r f(qt(1 - alpha, df_class))`$. Because `r f(t_stat)` is below that boundary, the one-sided test rejects $H_0$. The opposite alternative, $H_1:\mu_A-\mu_B>0$, would not. Choosing the direction after seeing the sign of the estimate invalidates the intended error rate.
+
+## 4. Statistical applications (optional)
+
+::: {.callout-note .optional-content}
+Optional — not covered or required for this course.
+:::
+
+Software commonly reports a **p-value**: assuming the null hypothesis and model, it is the probability of obtaining a test statistic at least as extreme as the one observed. For this two-sided test, departures in both directions count. It is not the probability that the null hypothesis is true. A p-value below the prespecified $\alpha=.05$ leads to rejection under the software's fractional-df convention. A confidence interval additionally describes the estimated difference and its uncertainty; see the optional theory above.
+
+### Optional raw-data exploration
+
+::: {.callout-note .optional-content collapse="true" title="Expand to see the observations and a dot plot"}
+The required calculation above deliberately starts from supplied summaries. The individual values below are provided only for visualization and software practice.
+
+```{r}
+#| echo: false
+raw_display <- data.frame(
+  Group = rep(c("A", "B"), c(length(a), length(b))),
+  SBP_mmHg = c(a, b)
+)
+knitr::kable(raw_display, col.names = c("Group", "SBP (mmHg)"))
+```
+
+```{r}
+#| echo: false
+#| fig-alt: "Dot plot of systolic blood pressure values for Group A and Group B. Group B is shifted higher and is more dispersed."
+#| fig-cap: "Individual observations, shown only for optional diagnostic exploration."
+#| fig-width: 7
+#| fig-height: 3.6
+stripchart(
+  list(`Group A` = a, `Group B` = b),
+  method = "stack",
+  pch = 19,
+  col = c("#2C7FB8", "#D95F0E"),
+  xlab = "Systolic blood pressure (mmHg)",
+  main = "Independent groups"
+)
+abline(v = c(m1, m2), lty = 2, col = c("#2C7FB8", "#D95F0E"))
+```
+:::
+
+### Software verification
+
+Software ordinarily uses the fractional Welch degrees of freedom. For this example, that gives $t^*=`r f(critical_full)`$, compared with `r f(critical)` under the course's integer-table convention. The decision is the same.
+
+#### Excel worksheet function
+
+Open [the CSV](data/independent-t-test.csv) in Excel. Its columns are `group` and `sbp`, with Group A in rows 2--9 and Group B in rows 10--17. Enter
+
+```text
+=T.TEST(B2:B9,B10:B17,2,3)
+```
+
+Here `2` requests a two-sided test and `3` requests the unequal-variance (Welch) version. Excel returns `r f(2 * pt(-abs(t_stat), df), 9)`. This is a p-value and is shown only as a software cross-check; it is not required for the course's critical-value calculation [@microsoftTtest].
+
+The saved native verification was recalculated and reopened without a repair prompt in Microsoft Excel for Mac 16.113; the linked provenance records the input and output fingerprints.
+
+```{r}
+#| echo: false
+#| results: asis
+excel_summary_path <- file.path(
+  topic_dir, "_examples", "independent-t-test", "excel-output.csv"
+)
+excel_native <- if (file.exists(excel_summary_path)) {
+  tryCatch(
+    read.csv(excel_summary_path, stringsAsFactors = FALSE),
+    error = function(e) NULL
+  )
+} else {
+  NULL
+}
+
+if (!is.null(excel_native) && identical(names(excel_native), c("key", "value"))) {
+  excel_value <- function(key) {
+    value <- excel_native$value[excel_native$key == key]
+    if (length(value) == 1) as.numeric(value) else NA_real_
+  }
+  worksheet_result <- data.frame(
+    Item = c(
+      "Mean difference (A - B)",
+      "t statistic",
+      "Fractional Welch df",
+      "T.TEST two-sided p-value"
+    ),
+    Result = c(
+      f(excel_value("difference"), 9),
+      f(excel_value("t_stat"), 9),
+      f(excel_value("df"), 9),
+      f(excel_value("p_value"), 12)
+    ),
+    check.names = FALSE
+  )
+  cat("**Saved native Excel worksheet result** ([CSV](_examples/independent-t-test/excel-output.csv); provenance: [JSON](_examples/independent-t-test/provenance.json))\n\n")
+  cat(knitr::kable(worksheet_result), sep = "\n")
+} else {
+  cat("**Native verification pending.** No readable `excel-output.csv` is available yet.\n")
+}
+```
+
+#### Excel Analysis ToolPak
+
+Enable the Analysis ToolPak if **Data Analysis** is absent from the **Data** tab.
+
+- **Windows:** choose **File > Options > Add-ins**. In **Manage**, select **Excel Add-ins**, choose **Go**, tick **Analysis ToolPak**, and choose **OK**.
+- **Mac:** choose **Tools > Excel Add-ins**, tick **Analysis ToolPak**, and choose **OK**.
+
+Then choose **Data > Data Analysis > t-Test: Two-Sample Assuming Unequal Variances**. Select the eight Group A values as Variable 1 and the eight Group B values as Variable 2, enter `0` for Hypothesized Mean Difference, tick **Labels** only if the selected ranges include headings, set Alpha to `0.05`, choose an output range or new worksheet, and run the analysis [@microsoftToolpak].
+
+The ToolPak rounds Welch degrees of freedom to the nearest integer, whereas worksheet `T.TEST`, R, and SciPy use the fractional value. In this dataset the ToolPak reports df `r df_class`; its critical value therefore matches the class workbook.
+
+```{r}
+#| echo: false
+#| results: asis
+toolpak_path <- file.path(
+  topic_dir, "_examples", "independent-t-test", "excel-toolpak.csv"
+)
+if (file.exists(toolpak_path)) {
+  toolpak_output <- tryCatch(
+    read.csv(toolpak_path, check.names = FALSE, stringsAsFactors = FALSE),
+    error = function(e) NULL
+  )
+  if (!is.null(toolpak_output)) {
+    toolpak_display <- toolpak_output
+    toolpak_display[] <- lapply(toolpak_display, function(x) {
+      if (is.numeric(x)) {
+        ifelse(is.na(x), "", formatC(x, format = "fg", digits = 10))
+      } else {
+        ifelse(is.na(x), "", x)
+      }
+    })
+    cat("**Saved native Excel Analysis ToolPak output** ([CSV](_examples/independent-t-test/excel-toolpak.csv))\n\n")
+    cat(knitr::kable(toolpak_display), sep = "\n")
+  } else {
+    cat("**Native verification pending.** The saved Excel output could not be read.\n")
+  }
+} else {
+  cat("**Native verification pending.** No saved `excel-toolpak.csv` is available yet.\n")
+}
+```
+
+The native ToolPak two-sided p-value is `r f(2 * pt(-abs(t_stat), df_class), 12)`, slightly larger than the worksheet `T.TEST` result because the ToolPak uses the rounded df of `r df_class`.
+
+Both Excel p-values are below .05, so both methods reject equal population means. The negative t statistic reflects the chosen A minus B order. In the ToolPak table, use **P(T<=t) two-tail** for this two-sided question; the one-tail rows answer a different question.
+
+#### R
+
+R's `t.test()` uses Welch's method by default, but setting `var.equal = FALSE` makes the choice explicit [@rTtest].
+
+Start R or RStudio with the project folder as the working directory, then run the following code. It uses only R's built-in `stats` package.
+
+```{r}
+#| echo: true
+dat <- read.csv("topics/hypothesis-testing/data/independent-t-test.csv")
+a_r <- dat$sbp[dat$group == "A"]
+b_r <- dat$sbp[dat$group == "B"]
+
+t.test(
+  a_r,
+  b_r,
+  alternative = "two.sided",
+  mu = 0,
+  var.equal = FALSE,
+  conf.level = 0.95
+)
+```
+
+The output reports $t=`r f(unname(fit$statistic))`$, fractional df $=`r f(unname(fit$parameter))`$, the same 95% confidence interval shown above, and the two-sided p-value `r f(fit$p.value, 6)`.
+
+Because the p-value is below .05 and the interval excludes zero, this output supports a population mean difference under the model. The sample estimates show Group A lower than Group B.
+
+#### Python with SciPy
+
+SciPy's `ttest_ind()` defaults to the pooled test, so `equal_var=False` is essential for Welch's method [@scipyTtestInd]. From the project root, create an environment, install the pinned validation dependencies, and run the complete reproducible script:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-validation.txt
+python topics/hypothesis-testing/_examples/independent-t-test/example.py
+```
+
+The essential analysis can be written compactly. This version imports the same CSV and makes the unequal-variance choice explicit:
+
+```python
+import csv
+from scipy import stats
+
+with open("topics/hypothesis-testing/data/independent-t-test.csv", newline="") as f:
+    rows = list(csv.DictReader(f))
+
+a = [float(row["sbp"]) for row in rows if row["group"] == "A"]
+b = [float(row["sbp"]) for row in rows if row["group"] == "B"]
+result = stats.ttest_ind(a, b, equal_var=False, alternative="two-sided")
+print(f"t={result.statistic:.9f}, df={result.df:.9f}, p={result.pvalue:.12f}")
+```
+
+The complete verification script is [example.py](_examples/independent-t-test/example.py), its saved console output is [python-output.txt](_examples/independent-t-test/python-output.txt), and the cross-software environment record is [provenance.json](_examples/independent-t-test/provenance.json). Saved output:
+
+```{r}
+#| echo: false
+#| results: asis
+python_output <- file.path(topic_dir, "_examples", "independent-t-test", "python-output.txt")
+if (file.exists(python_output)) {
+  cat("```text\n", paste(readLines(python_output, warn = FALSE), collapse = "\n"), "\n```\n", sep = "")
+} else {
+  cat("**Python verification pending.** No saved output is available yet.\n")
+}
+```
+
+Across R, SciPy, and Excel's `T.TEST(...,2,3)`, expect the same difference (`r f(difference)`), standard error (`r f(se)`), t statistic (`r f(t_stat)`), fractional Welch df (`r f(df)` where reported), and two-sided inference, apart from display rounding.
+
+In the saved Python output, `t_statistic` is the signed t value, `degrees_of_freedom` is the fractional Welch df, and `p_value_two_sided` is the two-sided p-value. The small p-value and entirely negative confidence interval support the same conclusion as R. These software results agree with the required critical-value decision for this example.
+
+### Further reading
+
+- @welch1947 introduced the unequal-variance approximation used here. Read it for the original argument behind the effective degrees of freedom.
+- @nistTwoSample gives a compact reference for the pooled and unequal-variance two-sample formulas.
+- @rTtest and @scipyTtestInd document the exact arguments used in the reproducible software checks.
+- @microsoftTtest, @microsoftTInv2t, and @microsoftToolpak explain Excel's worksheet functions and ToolPak workflow, including their degrees-of-freedom conventions.
+- @zimmerman2004 examines why choosing pooled or Welch after a preliminary variance test can perform poorly.
+
+## References
+
+::: {#refs}
+:::

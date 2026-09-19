@@ -1,0 +1,37 @@
+---
+title: "SPH5002 Companion"
+description: "Course-focused guidance for choosing, applying, and reporting statistical tests."
+listing:
+  id: topics-listing
+  contents: topics/*/index.qmd
+  type: table
+  sort: "order"
+  fields: [title, description]
+  field-links: [title]
+  filter-ui: false
+  sort-ui: false
+page-layout: full
+---
+
+## What this companion is for
+
+This site supports SPH5002 learning and revision. It helps you recognise when a statistical test is appropriate, apply it to a summary of the data, and report the result clearly. The teaching core assumes that you already know how to read means and standard deviations. Examples therefore begin with summary statistics rather than raw-data calculations. Degrees of freedom used in class are rounded to the nearest whole number. The pilot lesson uses a critical-value decision rule; a p-value is not required.
+
+Use each topic overview to choose a lesson. Each lesson separates course requirements from optional extensions.
+
+::: {.callout-important .required-content title="Required course content"}
+Required sections contain the concepts, decisions, and reporting skills you are expected to know for this course.
+:::
+
+::: {.callout-note .optional-content title="Optional extension"}
+Optional sections add theory or software detail for readers who want to go further. They are clearly marked and are not required for this course.
+:::
+
+## Topics
+
+::: {#topics-listing}
+:::
+
+## Introductory reading
+
+The NIST/SEMATECH *e-Handbook of Statistical Methods* offers a concise introduction to comparing two means [@nistTwoSample]. Its two-sample t-test page is useful for seeing how a research question, hypotheses, test statistic, and conclusion fit together. The course lesson builds on that overview and states the conventions used here.

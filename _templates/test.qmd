@@ -1,0 +1,45 @@
+---
+title: "Test name"
+description: "One sentence describing the question this test answers."
+data-type: "Outcome type and relationship between the samples."
+order: 99
+---
+
+State learning objectives, prerequisites, the required reading route, and download links here.
+
+## Overview
+
+Briefly state the research question, outcome type, study groups or measurements, and the conditions under which this test is appropriate. Assume that readers already know how to interpret means and standard deviations.
+
+## Application — required
+
+::: {.callout-important .required-content title="Required course content"}
+Explain the hypotheses, assumptions, calculation or interpretation steps, and reporting language required for SPH5002. Work from supplied summary statistics and use a critical-value decision. For Welch's test, round degrees of freedom to the nearest whole number, with positive halves rounded up. Do not require a p-value calculation.
+:::
+
+Include a worked hand example, a matching step-by-step spreadsheet table with cell references and formulas, common mistakes, and self-check questions with expandable answers. End with a concise interpretation in the context of the research question.
+
+## Theory — optional
+
+::: {.callout-note .optional-content title="Optional extension"}
+**Optional — not covered or required for this course.**
+
+Add mathematical background or deeper assumptions only when it helps an interested reader understand the method.
+:::
+
+## Statistical applications — optional
+
+::: {.callout-note .optional-content title="Optional extension"}
+**Optional — not covered or required for this course.**
+
+Show Excel, R and Python workflows with explicit method settings, verified output and interpretation. Link downloadable data, a workbook, and supporting resources with relative paths inside the topic folder. Execute only R during routine rendering; retain separately verified software output and provenance.
+:::
+
+## Additional reading
+
+Add annotated reading links and cite bibliographic keys from `references.bib`.
+
+## References
+
+::: {#refs}
+:::

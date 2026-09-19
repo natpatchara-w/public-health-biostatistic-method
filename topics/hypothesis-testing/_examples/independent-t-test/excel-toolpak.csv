@@ -1,0 +1,11 @@
+Statistic,Group A / result,Group B
+Mean,123.0,135.0
+Variance,24.0,96.0
+Observations,8.0,8.0
+Hypothesized Mean Difference,0.0,
+df,10.0,
+t Stat,-3.0983866769659336,
+P(T<=t) one-tail,0.005640808733909986,
+t Critical one-tail,1.812461122811676,
+P(T<=t) two-tail,0.011281617467819973,
+t Critical two-tail,2.2281388519862744,
